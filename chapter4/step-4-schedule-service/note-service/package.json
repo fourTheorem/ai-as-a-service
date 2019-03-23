@@ -1,0 +1,20 @@
+{
+  "name": "note-service",
+  "version": "1.0.0",
+  "description": "",
+  "main": "handler.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "aws-sdk": "^2.287.0",
+    "request": "^2.88.0",
+    "serverless-domain-manager": "^2.6.5"
+  },
+  "devDependencies": {
+    "serverless-dotenv-plugin": "^2.0.1",
+    "serverless-offline": "^3.25.10"
+  }
+}

@@ -1,0 +1,20 @@
+fuge_global:
+  tail: true
+  monitor: false
+  monitor_excludes:
+    - '**/node_modules/**'
+    - '**/.git/**'
+    - '*.log'
+todo:
+  type: process
+  path: ../todo-service
+  run: 'serverless offline start'
+  ports:
+    - todo=3000
+frontend:
+  type: process
+  path: ../frontend
+  run: 'npm start'
+  ports:
+    - frontend=9080
+

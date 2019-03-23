@@ -1,0 +1,31 @@
+fuge_global:
+  tail: true
+  monitor: false
+  monitor_excludes:
+    - '**/node_modules/**'
+    - '**/.git/**'
+    - '*.log'
+analysis:
+  type: process
+  path: ../analysis-service
+  run: 'serverless offline start'
+crawler:
+  type: process
+  path: ../crawler-service
+  run: 'serverless offline start'
+distributor:
+  type: process
+  path: ../distributor-service
+  run: 'serverless offline start'
+ui:
+  type: process
+  path: ../ui-service
+  run: 'serverless offline start'
+  ports:
+    - ui=3000
+frontend:
+  type: process
+  path: ../frontend-service
+  run: 'static-server'
+  ports:
+    - frontend=9080

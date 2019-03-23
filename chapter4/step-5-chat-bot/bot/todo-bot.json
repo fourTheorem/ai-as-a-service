@@ -1,0 +1,39 @@
+{
+    "status": "READY", 
+    "intents": [
+        {
+            "intentVersion": "1", 
+            "intentName": "MarkDone"
+        }, 
+        {
+            "intentVersion": "4", 
+            "intentName": "CreateTodo"
+        }
+    ], 
+    "name": "todo", 
+    "locale": "en-US", 
+    "checksum": "65fb0854-c45a-424d-8fba-4e8c28a2bc84", 
+    "abortStatement": {
+        "messages": [
+            {
+                "content": "Sorry, I could not understand. Goodbye.", 
+                "contentType": "PlainText"
+            }
+        ]
+    }, 
+    "version": "1", 
+    "lastUpdatedDate": 1541660137.035, 
+    "createdDate": 1541660115.422, 
+    "clarificationPrompt": {
+        "maxAttempts": 5, 
+        "messages": [
+            {
+                "content": "Sorry, can you please repeat that?", 
+                "contentType": "PlainText"
+            }
+        ]
+    }, 
+    "voiceId": "Joanna", 
+    "childDirected": false, 
+    "idleSessionTTLInSeconds": 300
+}

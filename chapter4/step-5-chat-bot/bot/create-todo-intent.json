@@ -1,0 +1,66 @@
+{
+    "confirmationPrompt": {
+        "maxAttempts": 3, 
+        "messages": [
+            {
+                "content": "Confirm that you want to {action} on {dueDate}", 
+                "contentType": "PlainText"
+            }
+        ]
+    }, 
+    "name": "CreateTodo", 
+    "checksum": "be6297bb-0c1a-41c7-aa34-414259c795a6", 
+    "version": "$LATEST", 
+    "rejectionStatement": {
+        "messages": [
+            {
+                "content": "OK no problem!", 
+                "contentType": "PlainText"
+            }
+        ]
+    }, 
+    "createdDate": 1541659540.509, 
+    "lastUpdatedDate": 1541659540.509, 
+    "sampleUtterances": [
+        "New to do", 
+        "Create to do"
+    ], 
+    "slots": [
+        {
+            "slotType": "AMAZON.DATE", 
+            "name": "dueDate", 
+            "slotConstraint": "Required", 
+            "valueElicitationPrompt": {
+                "maxAttempts": 2, 
+                "messages": [
+                    {
+                        "content": "What date is the to do for?", 
+                        "contentType": "PlainText"
+                    }
+                ], 
+                "responseCard": "{\"version\":1,\"contentType\":\"application/vnd.amazonaws.card.generic\"}"
+            }, 
+            "priority": 1, 
+            "sampleUtterances": []
+        }, 
+        {
+            "slotType": "AMAZON.EventType", 
+            "name": "action", 
+            "slotConstraint": "Required", 
+            "valueElicitationPrompt": {
+                "maxAttempts": 2, 
+                "messages": [
+                    {
+                        "content": "What is the action?", 
+                        "contentType": "PlainText"
+                    }
+                ]
+            }, 
+            "priority": 2, 
+            "sampleUtterances": []
+        }
+    ], 
+    "fulfillmentActivity": {
+        "type": "ReturnIntent"
+    }
+}

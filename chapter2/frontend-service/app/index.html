@@ -1,0 +1,36 @@
+<html>
+<head>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script> 
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+  <script src="/templates.js"></script>
+  <script src="/code.js"></script>
+  <script src="/wordcloud2.js"></script>
+</head>
+<body>
+
+
+<div class="navbar navbar-expand-lg navbar-light bg-light">
+  <a class="navbar-brand" href="#">AI as a Service - Chapter 2</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="#">Refresh List</a>
+      </li>
+    </ul>
+    <div class="form-inline my-2 my-lg-0">
+      <input id="target-url" class="form-control mr-sm-2" type="search" placeholder="Target Url" aria-label="Target Url">
+      <button id="submit-url-button" class="btn btn-outline-success my-2 my-sm-0" type="submit">Analyze</button>
+    </div>
+  </div>
+</div>
+
+<div id="content"></div>
+
+</body>
+</html>
+

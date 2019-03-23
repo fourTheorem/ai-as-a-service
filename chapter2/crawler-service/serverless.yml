@@ -1,0 +1,38 @@
+service: crawler-service
+frameworkVersion: ">=1.30.0"
+custom:
+  bucket: ${env:CHAPTER2_BUCKET}
+  queue: Chap2Queue
+  region: ${env:AWS_DEFAULT_REGION, 'eu-west-1'}
+  accountid: ${env:AWS_ACCOUNT_ID}
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  stage: dev
+  region: ${env:AWS_DEFAULT_REGION, 'eu-west-1'}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - s3:PutObject
+      Resource: "arn:aws:s3:::${self:custom.bucket}/*"
+    - Effect: Allow
+      Action:
+        - sqs:SendMessage
+        - sqs:DeleteMessage
+        - sqs:GetQueueUrl
+      Resource: "arn:aws:sqs:*:*:${self:custom.queue}"
+    - Effect: Allow
+      Action:
+        - sqs:ListQueues
+      Resource: "arn:aws:sqs:::*"
+
+functions:
+  crawlImages:
+    handler: handler.crawlImages
+    environment:
+      BUCKET: ${self:custom.bucket}
+      QUEUE: ${self:custom.queue}
+      REGION: ${self:custom.region}
+      ACCOUNTID: ${self:custom.accountid}
+

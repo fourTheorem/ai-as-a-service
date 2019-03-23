@@ -1,0 +1,17 @@
+{
+  "name": "crawler-service",
+  "version": "1.0.0",
+  "description": "",
+  "main": "handler.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "aws-sdk": "^2.286.2",
+    "htmlparser2": "^3.9.2",
+    "request": "^2.87.0",
+    "uuid": "^3.3.2"
+  }
+}

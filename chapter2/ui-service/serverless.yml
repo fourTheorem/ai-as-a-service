@@ -1,0 +1,72 @@
+service: ui-service
+frameworkVersion: ">=1.1.0 <2.0.0"
+plugins:
+  - serverless-offline
+  - serverless-domain-manager
+custom:
+  bucket: ${env:CHAPTER2_BUCKET}
+  queue: Chap2Queue
+  region: ${env:AWS_DEFAULT_REGION, 'eu-west-1'}
+  domain: ${env:CHAPTER2_DOMAIN}
+  accountid: ${env:AWS_ACCOUNT_ID}
+  customDomain:
+    domainName: 'chapter2api.${self:custom.domain}'
+    stage: dev
+    basePath: api
+    certificateName: '*.${self:custom.domain}'
+    createRoute53Record: true
+    endpointType: regional
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  region: ${env:AWS_DEFAULT_REGION, 'eu-west-1'}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - s3:PutObject
+        - s3:GetObject
+      Resource: "arn:aws:s3:::${self:custom.bucket}/*"
+    - Effect: Allow
+      Action:
+        - sqs:SendMessage
+        - sqs:DeleteMessage
+        - sqs:GetQueueUrl
+      Resource: "arn:aws:sqs:*:*:${self:custom.queue}"
+    - Effect: Allow
+      Action:
+        - sqs:ListQueues
+      Resource: "arn:aws:sqs:::*"
+
+functions:
+  analyzeUrl:
+    handler: handler.analyzeUrl
+    environment:
+      BUCKET: ${self:custom.bucket}
+      QUEUE: ${self:custom.queue}
+      REGION: ${self:custom.region}
+      ACCOUNTID: ${self:custom.accountid}
+    events:
+      - http:
+          path: url/analyze
+          method: post
+          cors: true
+  listUrls:
+    handler: handler.listUrls
+    environment:
+      BUCKET: ${self:custom.bucket}
+    events:
+      - http:
+          path: url/list
+          method: get
+          cors: true
+  listImages:
+    handler: handler.listImages
+    environment:
+      BUCKET: ${self:custom.bucket}
+    events:
+      - http:
+          path: image/list
+          method: get
+          cors: true
+

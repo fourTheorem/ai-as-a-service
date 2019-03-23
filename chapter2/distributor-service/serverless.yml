@@ -1,0 +1,39 @@
+service: distributor-service
+frameworkVersion: ">=1.30.0"
+custom:
+  queue: Chap2Queue
+  region: ${env:AWS_DEFAULT_REGION, 'eu-west-1'}
+  accountid: ${env:AWS_ACCOUNT_ID}
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  stage: dev
+  region: ${env:AWS_DEFAULT_REGION, 'eu-west-1'}
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "sqs:SendMessage"
+        - "sqs:GetQueueUrl"
+        - "sqs:ReceiveMessage"
+      Resource: "arn:aws:sqs:${self:provider.region}::${self:custom.queue}"
+    - Effect: "Allow"
+      Action:
+        - "sqs:ListQueues"
+      Resource: "arn:aws:sqs:${self:provider.region}::*"
+    - Effect: "Allow"
+      Action:
+        - "lambda:InvokeFunction"
+      Resource: "*"
+
+functions:
+  distribute:
+    handler: handler.distribute
+    events:
+      - sqs:
+          arn: "arn:aws:sqs:${self:provider.region}:${env:AWS_ACCOUNT_ID}:${self:custom.queue}"
+    environment:
+      QUEUE: ${self:custom.queue}
+      REGION: ${self:custom.region}
+      ACCOUNTID: ${self:custom.accountid}
+

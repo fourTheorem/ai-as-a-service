@@ -1,0 +1,30 @@
+Resources:
+  CognitoUserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: ${self:service}${self:provider.stage}userpool
+      UsernameAttributes:
+        - email
+      AutoVerifiedAttributes:
+        - email
+      EmailVerificationSubject: 'Your verification code'
+      EmailVerificationMessage: 'Your verification code is {####}.'
+      Schema:
+        - Name: email
+          AttributeDataType: String
+          Mutable: true
+          Required: true
+      AdminCreateUserConfig:
+        InviteMessageTemplate:
+          EmailMessage: 'Your username is {username} and temporary password is {####}.'
+          EmailSubject: 'Your temporary password'
+        UnusedAccountValidityDays: 2
+        AllowAdminCreateUserOnly: true
+  CognitoUserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      ClientName: ${self:service}${self:provider.stage}userpoolclient
+      GenerateSecret: false
+      UserPoolId:
+        Ref: CognitoUserPool
+
