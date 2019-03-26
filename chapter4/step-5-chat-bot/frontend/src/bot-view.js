@@ -29,7 +29,11 @@ function showResponse (lexResponse) {
   var responsePara = document.createElement('P')
   responsePara.className = 'lexResponse'
   if (lexResponse.message) {
-    responsePara.appendChild(document.createTextNode(lexResponse.message))
+    if (lexResponse.inputTranscript) {
+      responsePara.appendChild(document.createTextNode(lexResponse.message + ' ' + lexResponse.inputTranscript))
+    } else {
+      responsePara.appendChild(document.createTextNode(lexResponse.message))
+    }
     responsePara.appendChild(document.createElement('br'))
   }
   conversationDiv.appendChild(responsePara)

@@ -9,8 +9,6 @@
         ]
     }, 
     "name": "CreateTodo", 
-    "checksum": "be6297bb-0c1a-41c7-aa34-414259c795a6", 
-    "version": "$LATEST", 
     "rejectionStatement": {
         "messages": [
             {
@@ -19,8 +17,6 @@
             }
         ]
     }, 
-    "createdDate": 1541659540.509, 
-    "lastUpdatedDate": 1541659540.509, 
     "sampleUtterances": [
         "New to do", 
         "Create to do"

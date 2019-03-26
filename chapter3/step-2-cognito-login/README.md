@@ -4,7 +4,7 @@ Secured to do application.
 ## Deploy and remove
 If your AWS account is setup and and you have configured the following environment variables in your shell:
 
-``sh
+```sh
 AWS_ACCOUNT_ID
 AWS_DEFAULT_REGION
 AWS_ACCESS_KEY_ID
@@ -31,7 +31,6 @@ access using:
 
 ```
 https://${CHAPTER3_BUCKET}.s3.amazonaws.com/index.html
-https://chap3bucketfourtheorem.s3.amazonaws.com/index.html
 ```
 
 The system can be reomved using:

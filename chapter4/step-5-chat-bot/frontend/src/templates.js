@@ -96,7 +96,7 @@ function addTpl () {
 
 
 function errTpl (err) {
-  return `<div class="error">${err}</div>`
+  return `<div class="error">${JSON.stringify(err)}</div>`
 }
 
 

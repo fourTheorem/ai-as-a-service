@@ -4,7 +4,7 @@ Secured to do application.
 ## Deploy and remove
 If your AWS account is setup and and you have configured the following environment variables in your shell:
 
-``sh
+```sh
 AWS_ACCOUNT_ID
 AWS_DEFAULT_REGION
 AWS_ACCESS_KEY_ID

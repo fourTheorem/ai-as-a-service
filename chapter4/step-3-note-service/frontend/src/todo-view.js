@@ -38,6 +38,6 @@ function renderEditArea (id) {
 
 
 function renderError (body) {
-  $('#todo-list').innerHTML = errTpl(body.err)
+  $('#error').html(errTpl(body.err))
 }
 

@@ -1,18 +1,16 @@
 {
-    "status": "READY", 
     "intents": [
         {
             "intentVersion": "1", 
             "intentName": "MarkDone"
         }, 
         {
-            "intentVersion": "4", 
+            "intentVersion": "1", 
             "intentName": "CreateTodo"
         }
     ], 
     "name": "todo", 
     "locale": "en-US", 
-    "checksum": "65fb0854-c45a-424d-8fba-4e8c28a2bc84", 
     "abortStatement": {
         "messages": [
             {
@@ -21,9 +19,6 @@
             }
         ]
     }, 
-    "version": "1", 
-    "lastUpdatedDate": 1541660137.035, 
-    "createdDate": 1541660115.422, 
     "clarificationPrompt": {
         "maxAttempts": 5, 
         "messages": [

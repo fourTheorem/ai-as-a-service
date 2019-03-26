@@ -9,8 +9,6 @@
         ]
     }, 
     "name": "MarkDone", 
-    "checksum": "9ffa53ee-1ee2-4270-ad42-dbb74dca9cbb", 
-    "version": "$LATEST", 
     "rejectionStatement": {
         "messages": [
             {
@@ -19,8 +17,6 @@
             }
         ]
     }, 
-    "createdDate": 1541659970.589, 
-    "lastUpdatedDate": 1541659970.589, 
     "sampleUtterances": [
         "Mark done", 
         "Finished"

@@ -5,7 +5,7 @@ const s3 = new AWS.S3()
 const rek = new AWS.Rekognition()
 
 
-function analyzeImageLables (imageBucketKey) {
+function analyzeImageLabels (imageBucketKey) {
   const params = {
     Image: {
       S3Object: {
@@ -25,7 +25,7 @@ function analyzeImageLables (imageBucketKey) {
 }
 
 
-function writeAnalysis (domain, lables, wcList) {
+function writeAnalysis (domain, labels, wcList) {
   return new Promise((resolve) => {
     var params = {
       Bucket: process.env.BUCKET,
@@ -35,7 +35,7 @@ function writeAnalysis (domain, lables, wcList) {
     s3.getObject(params, (err, data) => {
       if (err) { return resolve({stat: err}) }
       let statFile = JSON.parse(data.Body.toString())
-      statFile.analysisResults = lables
+      statFile.analysisResults = labels 
       statFile.wordCloudList = wcList
       statFile.stat = 'analyzed'
       s3.putObject({Bucket: process.env.BUCKET, Key: domain + '/status.json', Body: Buffer.from(JSON.stringify(statFile), 'utf8')}, (err, data) => {
@@ -80,7 +80,7 @@ function iterateBucket (domain) {
       if (err) { return resolve({statusCode: 500, body: JSON.stringify(err)}) }
       data.Contents.forEach(imageFile => {
         if (imageFile.Key !== domain + '/status.json') {
-          promises.push(analyzeImageLables(imageFile.Key))
+          promises.push(analyzeImageLabels(imageFile.Key))
         }
       })
 
