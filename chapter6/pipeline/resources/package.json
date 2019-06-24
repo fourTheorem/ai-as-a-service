@@ -1,0 +1,14 @@
+{
+  "name": "resources",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Peter Elger <peter.elger@fourtheorem.com>",
+  "license": "ISC",
+  "devDependencies": {
+    "serverless-dotenv-plugin": "^2.0.1"
+  }
+}

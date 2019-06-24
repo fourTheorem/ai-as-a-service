@@ -1,0 +1,18 @@
+{
+  "name": "preprocess",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Peter Elger <peter.elger@nearform.com>",
+  "license": "ISC",
+  "dependencies": {
+    "async": "^2.6.2",
+    "aws-sdk": "^2.433.0"
+  },
+  "devDependencies": {
+    "serverless-dotenv-plugin": "^2.0.1"
+  }
+}

@@ -1,0 +1,17 @@
+[
+  {
+    "source": "twitter",
+    "originator": "@pelger",
+    "originalText": "Sicherheit und Compliance sind für Capital One als Finanzinstitut von entscheidender Bedeutung.",
+    "originalLanguage": "de",
+    "text": "Security and compliance are crucial for Capital One as a financial institution"
+  },
+  {
+    "source": "twitter",
+    "originator": "@pelger",
+    "originalText": "To address these needs, Capital One built a cloud-risk framework and established a cloud-governance function before moving a single workload to AWS.",
+    "originalLanguage": "en",
+    "text": "To address these needs, Capital One built a cloud-risk framework and established a cloud-governance function before moving a single workload to AWS."
+  }
+]
+

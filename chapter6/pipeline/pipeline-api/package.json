@@ -1,0 +1,17 @@
+{
+  "name": "pipeline-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Peter Elger <peter.elger@nearform.com>",
+  "license": "ISC",
+  "devDependencies": {
+    "serverless-dotenv-plugin": "^2.0.1"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.437.0"
+  }
+}

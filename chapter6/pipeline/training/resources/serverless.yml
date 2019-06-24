@@ -1,0 +1,25 @@
+service: chapter6-resources
+frameworkVersion: ">=1.30.0"
+plugins:
+  - serverless-dotenv-plugin
+custom:
+  region: ${env:AWS_DEFAULT_REGION, 'eu-west-1'}
+  accountid: ${env:AWS_ACCOUNT_ID}
+  trainingbucket: ${env:CHAPTER6_PIPELINE_TRAINING_BUCKET}
+  dotenv:
+    path: ../../.env
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  stage: ${opt:stage, 'dev'}
+  region: ${env:AWS_DEFAULT_REGION, 'eu-west-1'}
+
+resources:
+  Resources:
+    TrainingBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:custom.trainingbucket}
+        AccessControl: Private
+
