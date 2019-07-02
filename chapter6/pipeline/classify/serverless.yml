@@ -22,7 +22,16 @@ provider:
       Action:
         - comprehend:DetectSentiment
         - comprehend:StartDocumentClassificationJob
-        - comprehend.DescribeDocumentClassificationJob
+        - comprehend:DescribeDocumentClassificationJob
+      Resource: "*"
+    - Effect: Allow
+      Action:
+        - sts:AssumeRole
+      Resource:
+        - ${env.CHAPTER6_DATA_ACCESS_ARN}
+    - Effect: Allow
+      Action:
+        - iam:PassRole
       Resource: "*"
 
 functions:

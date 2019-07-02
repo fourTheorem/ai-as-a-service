@@ -165,6 +165,7 @@ function pollInProgressJob (cb) {
     }
     comp.describeDocumentClassificationJob(params, (err, data) => {
       if (err) { return cb(err) }
+      console.log(data.DocumentClassificationJobProperties)
       if (data.DocumentClassificationJobProperties.JobStatus === 'COMPLETED') {
         result.status = 'completed'
         result.outputUrl = data.DocumentClassificationJobProperties.OutputDataConfig.S3Uri

@@ -25,12 +25,19 @@ const permissionsPolicy = {
     Action: [ 's3:ListBucket' ],
     Resource: [ `arn:aws:s3:::${process.env.CHAPTER6_PIPELINE_TRAINING_BUCKET}` ],
     Effect: 'Allow'
-  }]
-/*, {
+  }, {
+    Action: [ 's3:ListBucket' ],
+    Resource: [ `arn:aws:s3:::${process.env.CHAPTER6_PIPELINE_PROCESSING_BUCKET}` ],
+    Effect: 'Allow'
+  }, {
+    Action: [ 's3:GetObject' ],
+    Resource: [ `arn:aws:s3:::${process.env.CHAPTER6_PIPELINE_PROCESSING_BUCKET}/*` ],
+    Effect: 'Allow'
+  }, {
     Action: [ 's3:PutObject' ],
-    Resource: [ `arn:aws:s3:::${process.env.CHAPTER6_PIPELINE_CLASSIFIER_BUCKET}/*` ],
-    Effect: 'Allow'}
-*/
+    Resource: [ `arn:aws:s3:::${process.env.CHAPTER6_PIPELINE_PROCESSING_BUCKET}/*` ],
+    Effect: 'Allow'
+  }]
 }
 
 

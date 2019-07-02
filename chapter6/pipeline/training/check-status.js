@@ -8,6 +8,21 @@ const AWS = require('aws-sdk')
 const comp = new AWS.Comprehend()
 
 
+comp.listDocumentClassifiers({}, (err, data) => {
+  if (err) { return console.log(err) }
+  data.DocumentClassifierPropertiesList.forEach(props => {
+    console.log(props.DocumentClassifierArn + ' -> ' + props.Status)
+  })
+})
+
+
+/*
+comp.listDocumentClassificationJobs({}, (err, data) => {
+  if (err) { return console.log(err) }
+  console.log(data)
+})
+
+
 const params = {
   DocumentClassifierArn: process.env.CHAPTER6_CLASSIFIER_ARN
 }
@@ -15,4 +30,5 @@ comp.describeDocumentClassifier(params, (err, data) => {
   if (err) { return console.log(err) }
   console.log('status: ' + data.DocumentClassifierProperties.Status)
 })
+*/
 
