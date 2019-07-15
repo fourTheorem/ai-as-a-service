@@ -1,0 +1,54 @@
+{
+  "headers": {
+    "Host": "localhost:4000",
+    "User-Agent": "curl/7.60.0",
+    "Accept": "*/*",
+    "Content-Length": "24",
+    "Content-Type": "application/x-www-form-urlencoded"
+  },
+  "multiValueHeaders": {
+    "Host": ["localhost:4000"],
+    "User-Agent": ["curl/7.60.0"],
+    "Accept": ["*/*"],
+    "Content-Length": ["24"],
+    "Content-Type": ["application/x-www-form-urlencoded"]
+  },
+  "path": "/frontier-url/www.fourtheorem.com/abacus.html",
+  "pathParameters": {
+    "domain": "www.fourtheorem.com",
+    "path": "abacus.html"
+  },
+  "requestContext": {
+    "accountId": "offlineContext_accountId",
+    "resourceId": "offlineContext_resourceId",
+    "apiId": "offlineContext_apiId",
+    "requestId": "offlineContext_requestId_7643257361183236",
+    "identity": {
+      "cognitoIdentityPoolId": "offlineContext_cognitoIdentityPoolId",
+      "accountId": "offlineContext_accountId",
+      "cognitoIdentityId": "offlineContext_cognitoIdentityId",
+      "caller": "offlineContext_caller",
+      "apiKey": "offlineContext_apiKey",
+      "sourceIp": "127.0.0.1",
+      "cognitoAuthenticationType": "offlineContext_cognitoAuthenticationType",
+      "cognitoAuthenticationProvider": "offlineContext_cognitoAuthenticationProvider",
+      "userArn": "offlineContext_userArn",
+      "userAgent": "curl/7.60.0",
+      "user": "offlineContext_user"
+    },
+    "authorizer": {
+      "principalId": "offlineContext_authorizer_principalId"
+    },
+    "protocol": "HTTP/1.1",
+    "protocol": "HTTP/1.1",
+    "resourcePath": "/frontier-url/{domain}/{path}",
+    "httpMethod": "PATCH"
+  },
+  "resource": "/frontier-url/{domain}/{path}",
+  "httpMethod": "PATCH",
+  "queryStringParameters": null,
+  "multiValueQueryStringParameters": null,
+  "stageVariables": null,
+  "body": "{\"status\":\"IN_PROGRESS\"}",
+  "isOffline": true
+}

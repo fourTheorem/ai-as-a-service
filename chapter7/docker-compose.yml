@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  localstack:
+    image: localstack/localstack
+    ports:
+      - '4567:4567' # API Gateway
+      - '4569:4569' # DynamoDB
+      - '4572:4572' # S3
+      - '4574:4574' # Lambda
+      - '4581:4581' # CloudFormation
+      - '4583:4583' # SSM
+      - '4586:4586' # CloudWatch Logs
+      - '4593:4593' # IAM
+    environment:
+      - DEFAULT_REGION=us-east-1
+      - SERVICES=apigateway,dynamodb,s3,lambda,ssm,logs,iam,cloudformation

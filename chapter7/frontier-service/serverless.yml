@@ -1,0 +1,137 @@
+service: frontier-service
+
+plugins:
+  # Order of plugins is important for dynamodb-local
+  # Using fork of serverless-dynamodb-local due to https://github.com/99xt/dynamodb-localhost/issues/25
+  - '@dathuis/serverless-dynamodb-local'
+  - serverless-offline
+  - serverless-prune-plugin
+  - serverless-pseudo-parameters
+
+custom:
+  serverless-offline:
+    port: 4000
+  prune:
+    automatic: true
+    number: 3
+  dynamodb:
+    start:
+      port: 8000
+      migrate: true
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  stage: ${opt:stage, 'dev'}
+  region: ${opt:region, 'eu-west-1'}
+  environment:
+    STAGE: ${self:provider.stage}
+    FRONTIER_TABLE: ${self:provider.stage}Frontier
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - 'dynamodb:BatchGetItem'
+        - 'dynamodb:PutItem'
+        - 'dynamodb:DescribeTable'
+        - 'dynamodb:DeleteItem'
+        - 'dynamodb:GetItem'
+        - 'dynamodb:Scan'
+        - 'dynamodb:Query'
+        - 'dynamodb:UpdateItem'
+      Resource: 'arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId}:table/${self:provider.stage}Frontier*'
+
+functions:
+  create:
+    handler: handler.create
+    events:
+      - http:
+          method: POST
+          path: frontier-url/{seed}/{url}
+          authorizer: aws_iam
+
+  createSeed:
+    handler: handler.create
+    events:
+      - http:
+          method: POST
+          path: frontier-url/{seed}
+          authorizer: aws_iam
+
+  update:
+    handler: handler.update
+    events:
+      - http:
+          method: PATCH
+          path: frontier-url/{seed}/{url}
+          authorizer: aws_iam
+
+  bulkInsert:
+    handler: handler.bulkInsert
+    events:
+      - http:
+          method: PUT
+          path: frontier-url
+          authorizer: aws_iam
+
+  list:
+    handler: handler.list
+    events:
+      - http:
+          method: GET
+          path: frontier-url/{seed}
+          authorizer: aws_iam
+
+resources:
+  Outputs:
+    apiDeploymentUrl:
+      Value: !Join
+        - ''
+        - - https://
+          - !Ref ApiGatewayRestApi
+          - .execute-api.
+          - ${self:provider.region}
+          - .amazonaws.com/prod/frontier
+      Export:
+        Name: frontier-api-url
+
+  Resources:
+    frontierTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:provider.environment.FRONTIER_TABLE}
+        AttributeDefinitions:
+          - AttributeName: seed
+            AttributeType: S
+          - AttributeName: url
+            AttributeType: S
+          - AttributeName: status
+            AttributeType: S
+        KeySchema:
+          - AttributeName: seed
+            KeyType: HASH
+          - AttributeName: url
+            KeyType: RANGE
+        LocalSecondaryIndexes:
+          - IndexName: ${self:provider.environment.FRONTIER_TABLE}Status
+            KeySchema:
+              - AttributeName: seed
+                KeyType: HASH
+              - AttributeName: status
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+        ProvisionedThroughput:
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
+
+    frontierUrlParameter:
+      Type: AWS::SSM::Parameter
+      Properties:
+        Name: /${self:provider.stage}/frontier/url
+        Type: String
+        Value:
+          Fn::Join:
+            - ''
+            - - 'https://'
+              - !Ref ApiGatewayRestApi
+              - '.execute-api.${self:provider.region}.amazonaws.com/${self:provider.stage}/frontier-url'

@@ -1,0 +1,14 @@
+{
+  "name": "item-store",
+  "version": "1.0.0",
+  "description": "Item Store",
+  "scripts": {
+    "start": "sls offline start"
+  },
+  "author": "Eoin Shanaghy <eoin.shanaghy@fourtheorem.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "serverless-pseudo-parameters": "^2.4.0"
+  },
+  "dependencies": {}
+}

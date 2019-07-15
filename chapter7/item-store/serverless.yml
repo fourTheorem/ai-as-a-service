@@ -1,0 +1,23 @@
+service: item-store
+
+plugins:
+  - serverless-pseudo-parameters
+
+custom:
+  bucketName: '#{AWS::AccountId}-${self:provider.stage}-item-store'
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  stage: ${opt:stage, 'dev'}
+  region: ${opt:region, 'eu-west-1'}
+  environment:
+    STAGE: ${self:provider.stage}
+
+resources:
+  Resources:
+
+    bucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:custom.bucketName}

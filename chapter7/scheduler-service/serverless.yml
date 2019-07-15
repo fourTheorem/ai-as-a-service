@@ -1,0 +1,81 @@
+service: scheduler-service
+
+plugins:
+  - serverless-offline
+  - serverless-prune-plugin
+  - serverless-pseudo-parameters
+  - serverless-step-functions
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  stage: ${opt:stage, 'dev'}
+  region: ${opt:region, 'eu-west-1'}
+  environment:
+    STAGE: ${self:provider.stage}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - events:PutEvents
+      Resource: '*'
+    - Effect: Allow
+      Action:
+        - ssm:GetParameters
+      Resource:
+        - arn:aws:ssm:#{AWS::Region}:#{AWS::AccountId}:parameter/${self:provider.stage}/frontier/*
+    - Effect: Allow
+      Action:
+        - execute-api:Invoke
+        - execute-api:GET
+        - execute-api:POST
+      Resource:
+        - arn:aws:execute-api:#{AWS::Region}:#{AWS::AccountId}:*/${self:provider.stage}/*/frontier-url/*
+
+functions:
+  getBatch:
+    handler: handler.getBatch
+  putSeed:
+    handler: handler.putSeed
+
+stepFunctions:
+  stateMachines:
+    scheduler:
+      name: CrawlScheduler
+      definition:
+        StartAt: Seed URL
+        States:
+          Seed URL:
+            Type: Task
+            Resource: !GetAtt PutSeedLambdaFunction.Arn
+            Next: Get URL Batch
+            InputPath: '$'
+            ResultPath: '$.seedResult'
+            OutputPath: '$'
+          Get URL Batch:
+            Type: Task
+            Resource: !GetAtt GetBatchLambdaFunction.Arn
+            Next: Check Batch Count
+            InputPath: '$'
+            ResultPath: '$.getBatchResult'
+            OutputPath: '$'
+          Check Batch Count:
+            Type: Choice
+            Choices:
+              - Not:
+                  Variable: $.getBatchResult.count
+                  NumericEquals: 0
+                Next: Fetch
+            Default: Done
+          Fetch:
+            Type: Task
+            Resource: ${ssm:/${self:provider.stage}/fetch/lambda-arn}
+            InputPath: $.getBatchResult.items
+            ResultPath: $.fetchResult
+            Next: Wait
+          Wait:
+            Type: Wait
+            Seconds: 30
+            Next: Get URL Batch
+          Done:
+            Type: Pass
+            End: true
