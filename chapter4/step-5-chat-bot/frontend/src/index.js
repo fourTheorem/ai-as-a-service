@@ -14,8 +14,8 @@ import {bot} from './bot'
 const oauth = {
   domain: process.env.CHAPTER3_COGNITO_DOMAIN,
   scope: ['email'],
-  redirectSignIn: `https://${process.env.CHAPTER3_BUCKET}.s3.amazonaws.com/index.html`,
-  redirectSignOut: `https://${process.env.CHAPTER3_BUCKET}.s3.amazonaws.com/index.html`,
+  redirectSignIn: `https://s3-${process.env.TARGET_REGION}.amazonaws.com/${process.env.CHAPTER3_BUCKET}/index.html`,
+  redirectSignOut: `https://s3-${process.env.TARGET_REGION}.amazonaws.com/${process.env.CHAPTER3_BUCKET}/index.html`,
   responseType: 'token'
 }
 
