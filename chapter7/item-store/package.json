@@ -8,6 +8,7 @@
   "author": "Eoin Shanaghy <eoin.shanaghy@fourtheorem.com>",
   "license": "MIT",
   "devDependencies": {
+    "serverless-dotenv-plugin": "^2.1.1",
     "serverless-pseudo-parameters": "^2.4.0"
   },
   "dependencies": {}

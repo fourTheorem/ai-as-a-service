@@ -11,6 +11,7 @@
     "chrome-launcher": "^0.10.7",
     "iltorb": "^2.4.3",
     "puppeteer-core": "^1.17.0",
+    "serverless-dotenv-plugin": "^2.1.1",
     "serverless-offline": "^3.33.0",
     "serverless-plugin-chrome": "^1.0.0-55",
     "serverless-prune-plugin": "^1.3.2",
