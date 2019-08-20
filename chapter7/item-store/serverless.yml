@@ -2,9 +2,11 @@ service: item-store
 
 plugins:
   - serverless-pseudo-parameters
+  - serverless-dotenv-plugin
 
 custom:
-  bucketName: '#{AWS::AccountId}-${self:provider.stage}-item-store'
+  dotenv:
+    path: ../.env
 
 provider:
   name: aws
@@ -16,8 +18,7 @@ provider:
 
 resources:
   Resources:
-
     bucket:
       Type: AWS::S3::Bucket
       Properties:
-        BucketName: ${self:custom.bucketName}
+        BucketName: ${env:ITEM_STORE_BUCKET}

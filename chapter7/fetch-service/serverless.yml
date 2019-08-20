@@ -5,6 +5,7 @@ plugins:
   - serverless-prune-plugin
   - serverless-plugin-chrome
   - serverless-pseudo-parameters
+  - serverless-dotenv-plugin
 
 provider:
   name: aws
@@ -13,7 +14,7 @@ provider:
   region: ${opt:region, 'eu-west-1'}
   environment:
     STAGE: ${self:provider.stage}
-    ITEM_STORE_BUCKET: ${self:custom.itemStoreBucket}
+    ITEM_STORE_BUCKET: ${env:ITEM_STORE_BUCKET}
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -29,7 +30,7 @@ provider:
       Action:
         - s3:PutObject
       Resource:
-        - arn:aws:s3:::${self:custom.itemStoreBucket}/*
+        - arn:aws:s3:::${env:ITEM_STORE_BUCKET}/*
     - Effect: Allow
       Action:
         - execute-api:Invoke
@@ -38,7 +39,8 @@ provider:
         - arn:aws:execute-api:#{AWS::Region}:#{AWS::AccountId}:*/${self:provider.stage}/*/frontier-url/*
 
 custom:
-  itemStoreBucket: '#{AWS::AccountId}-${self:provider.stage}-item-store'
+  dotenv:
+    path: ../.env
   chrome:
     flags:
       - --window-size=1280,1696
