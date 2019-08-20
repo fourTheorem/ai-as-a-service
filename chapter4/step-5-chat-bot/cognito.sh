@@ -26,8 +26,8 @@ case $1 in
 
     aws cognito-idp update-user-pool-client --user-pool-id $CHAPTER3_POOL_ID --client-id $CHAPTER3_POOL_CLIENT_ID\
      --supported-identity-providers "COGNITO"\
-     --callback-urls "[\"https://${CHAPTER3_BUCKET}.s3.amazonaws.com/index.html\"]"\
-     --logout-urls "[\"https://${CHAPTER3_BUCKET}.s3.amazonaws.com/index.html\"]"\
+     --callback-urls "[\"https://s3-${TARGET_REGION}.amazonaws.com/${CHAPTER3_BUCKET}/index.html\"]"\
+     --logout-urls "[\"https://s3-${TARGET_REGION}.amazonaws.com/${CHAPTER3_BUCKET}/index.html\"]"\
      --allowed-o-auth-flows "implicit"\
      --allowed-o-auth-scopes "email" "openid" "aws.cognito.signin.user.admin"\
      --allowed-o-auth-flows-user-pool-client
