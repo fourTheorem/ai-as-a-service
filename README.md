@@ -11,8 +11,9 @@ Here you will find the code examples for:
 * [Chapter 2](./chapter2)
 * [Chapter 3](./chapter3)
 * [Chapter 4](./chapter4)
+* [Chapter 5](./chapter5). Chapter 5 primarily uses a separate project repository for all examples. You can find it in the [SLIC Starter GitHub repository](https://github.com/fourTheorem/slic-starter).
 * [Chapter 6](./chapter6)
-* [Chapter 7](./chapter7)
+* [Chapter 7 and 8](./chapter7-8)
 
 ## LiveBook Discussion
 
