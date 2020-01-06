@@ -1,0 +1,79 @@
+service: strategy-service
+
+plugins:
+  - serverless-prune-plugin
+  - serverless-pseudo-parameters
+
+custom:
+  strategyQueueName: ${self:provider.stage}-strategy-queue
+  prune:
+    automatic: true
+    number: 3
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  stage: ${opt:stage, 'dev'}
+  region: ${opt:region, 'eu-west-1'}
+  environment:
+    STAGE: ${self:provider.stage}
+    MAX_DEPTH: 3
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - sqs:GetQueueUrl
+        - sqs:ReceiveMessage
+      Resource: !GetAtt strategyQueue.Arn
+    - Effect: Allow
+      Action:
+        - ssm:GetParameter
+        - ssm:GetParameters
+      Resource:
+        - arn:aws:ssm:#{AWS::Region}:#{AWS::AccountId}:parameter/${self:provider.stage}/frontier/*
+    - Effect: Allow
+      Action:
+        - execute-api:Invoke
+        - execute-api:PUT
+      Resource:
+        - arn:aws:execute-api:#{AWS::Region}:*:*/${self:provider.stage}/*/frontier-url
+
+functions:
+  handleDiscoveredUrls:
+    handler: handler.handleDiscoveredUrls
+    events:
+      - sqs:
+          arn: !GetAtt strategyQueue.Arn
+
+resources:
+  Resources:
+    strategyQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: ${self:custom.strategyQueueName}
+
+    strategyQueuePolicy:
+      Type: AWS::SQS::QueuePolicy
+      Properties:
+        Queues:
+          - !Ref strategyQueue
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - sqs:SendMessage
+              Principal:
+                Service: events.amazonaws.com
+              Resource: !GetAtt strategyQueue.Arn
+
+    discoveredUrlRule:
+      Type: AWS::Events::Rule
+      Properties:
+        EventPattern:
+          detail-type:
+            - url.discovered
+        Name: ${self:provider.stage}-url-discovered-rule
+        Targets:
+          - Arn: !GetAtt strategyQueue.Arn
+            Id: ${self:provider.stage}-url-discovered-strategy-queue-target
+            InputPath: '$.detail'

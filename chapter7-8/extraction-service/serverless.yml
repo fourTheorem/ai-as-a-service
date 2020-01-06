@@ -1,0 +1,155 @@
+service: extraction-service
+frameworkVersion: '>=1.47.0'
+
+plugins:
+  - serverless-offline
+  - serverless-prune-plugin
+  - serverless-pseudo-parameters
+  - serverless-step-functions
+  - serverless-dotenv-plugin
+
+custom:
+  serverless-offline:
+    port: 4005
+  prune:
+    automatic: true
+    number: 3
+  dotenv:
+    path: ../.env
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  stage: ${opt:stage, 'dev'}
+  region: ${opt:region, 'eu-west-1'}
+  environment:
+    STAGE: ${self:provider.stage}
+    DATA_ACCESS_ROLE_ARN: !GetAtt dataAccessRole.Arn
+    ITEM_STORE_BUCKET: ${env:ITEM_STORE_BUCKET}
+  iamRoleStatements: ${file(./sls-iam-role-statements.yml)}
+
+functions:
+  iterator:
+    handler: handler.iterator
+
+  getTextBatch:
+    handler: handler.getTextBatch
+    reservedConcurrency: 1
+
+  startBatchProcessing:
+    handler: handler.startBatchProcessing
+    reservedConcurrency: 1
+
+  checkActiveJobs:
+    handler: handler.checkActiveJobs
+
+  processEntityResults:
+    handler: handler.processEntityResults
+    events:
+      - s3:
+          bucket: ${env:ITEM_STORE_BUCKET}
+          event: s3:ObjectCreated:*
+          rules:
+            - prefix: entity-results/
+            - suffix: /output.tar.gz
+          existing: true
+
+resources:
+  Resources:
+    dataAccessRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: ${self:provider.stage}ComprehendDataAccessRole
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service: comprehend.amazonaws.com
+              Action: [sts:AssumeRole]
+        Path: /
+    dataAccessPolicy:
+      Type: AWS::IAM::Policy
+      Properties:
+        PolicyName: ${self:provider.stage}ComprehendDataAccessPolicy
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - s3:GetObject
+                - s3:PutObject
+                - s3:ListBucket
+              Resource:
+                - arn:aws:s3:::${env:ITEM_STORE_BUCKET}
+                - arn:aws:s3:::${env:ITEM_STORE_BUCKET}/*
+        Roles:
+          - Ref: dataAccessRole
+
+stepFunctions:
+  stateMachines:
+    entityExtraction:
+      name: EntityExtraction
+      definition:
+        StartAt: Initialize
+        States:
+          Initialize:
+            Type: Pass
+            Result:
+              iterations: 100
+            ResultPath: $.iterator
+            Next: Iterator
+          Iterator:
+            Type: Task
+            Resource: !GetAtt IteratorLambdaFunction.Arn
+            ResultPath: $.iterator
+            Next: ShouldFinish
+          ShouldFinish:
+            Type: Choice
+            Choices:
+              - Variable: $.iterator.iterations
+                NumericEquals: 0
+                Next: Done
+            Default: Check Comprehend
+          Check Comprehend:
+            Type: Task
+            Resource: !GetAtt CheckActiveJobsLambdaFunction.Arn
+            Next: Check Job Limit
+            InputPath: '$'
+            ResultPath: '$.activeJobsResult'
+            OutputPath: '$'
+          Check Job Limit:
+            Type: Choice
+            Choices:
+              - Variable: $.activeJobsResult.count
+                NumericGreaterThanEquals: 10
+                Next: Wait
+            Default: Get Text Batch
+          Get Text Batch:
+            Type: Task
+            Resource: !GetAtt GetTextBatchLambdaFunction.Arn
+            Next: Check Batch Size
+            InputPath: '$'
+            ResultPath: '$.textBatchResult'
+            OutputPath: '$'
+          Check Batch Size:
+            Type: Choice
+            Choices:
+              - Variable: $.textBatchResult.count
+                NumericEquals: 0
+                Next: Wait
+            Default: Start Batch Processing
+          Start Batch Processing:
+            Type: Task
+            Resource: !GetAtt StartBatchProcessingLambdaFunction.Arn
+            Next: Wait
+            InputPath: '$.textBatchResult'
+            ResultPath: '$.startBatchProcessingResult'
+            OutputPath: '$'
+          Wait:
+            Type: Wait
+            Seconds: 30
+            Next: Iterator
+          Done:
+            Type: Pass
+            End: true

@@ -1,0 +1,71 @@
+service: preparation-service
+frameworkVersion: '>=1.47.0'
+
+plugins:
+  - serverless-prune-plugin
+  - serverless-pseudo-parameters
+  - serverless-dotenv-plugin
+
+custom:
+  serverless-offline:
+    port: 4006
+  dlqQueueName: ${self:provider.stage}PreparationDlq
+  prune:
+    automatic: true
+    number: 3
+  dotenv:
+    path: ../.env
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  stage: ${opt:stage, 'dev'}
+  region: ${opt:region, 'eu-west-1'}
+  environment:
+    STAGE: ${self:provider.stage}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - s3:GetObject
+        - s3:PutObject
+        - s3:ListBucket # Allows NoSuchKeyError instead of AccessDenied when we try to GetObject a non-existent object
+      Resource:
+        - arn:aws:s3:::${env:ITEM_STORE_BUCKET}/*
+    - Effect: Allow
+      Action:
+        - ssm:GetParameters
+      Resource:
+        - arn:aws:ssm:#{AWS::Region}:#{AWS::AccountId}:parameter/${self:provider.stage}/frontier/*
+    - Effect: Allow
+      Action:
+        - sqs:GetQueueUrl
+        - sqs:DeleteMessage
+        - sqs:SendMessage
+        - sqs:ReceiveMessage
+      Resource:
+        - !GetAtt preparationDlq.Arn
+
+functions:
+  prepare:
+    handler: handler.prepare
+    events:
+      - s3:
+          bucket: ${env:ITEM_STORE_BUCKET}
+          event: s3:ObjectCreated:*
+          rules:
+            - suffix: page.txt
+          existing: true
+    onError: !GetAtt preparationDlq.Arn
+
+  retryDlq:
+    handler: dlq-handler.retry
+    environment:
+      DLQ_QUEUE_NAME: ${self:custom.dlqQueueName}
+
+resources:
+  Resources:
+    preparationDlq:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: ${self:custom.dlqQueueName}
+        MessageRetentionPeriod: 86400

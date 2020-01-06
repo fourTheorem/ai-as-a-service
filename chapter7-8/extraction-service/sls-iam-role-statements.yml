@@ -1,0 +1,33 @@
+- Effect: Allow
+  Action:
+    - execute-api:Invoke
+    - execute-api:PATCH
+  Resource:
+    - arn:aws:execute-api:#{AWS::Region}:#{AWS::AccountId}:*/${self:provider.stage}/*/frontier-url/*
+- Effect: Allow
+  Action:
+    - ssm:GetParameter
+    - ssm:GetParameters
+  Resource:
+    - arn:aws:ssm:#{AWS::Region}:#{AWS::AccountId}:parameter/${self:provider.stage}/frontier/*
+- Effect: Allow
+  Action:
+    - s3:ListBucket
+    - s3:GetObject
+    - s3:PutObject
+    - s3:DeleteObject
+  Resource:
+    - arn:aws:s3:::${env:ITEM_STORE_BUCKET}
+    - arn:aws:s3:::${env:ITEM_STORE_BUCKET}/*
+- Effect: Allow
+  Action:
+    - comprehend:StartEntitiesDetectionJob
+    - comprehend:ListEntitiesDetectionJobs
+  Resource:
+    - '*'
+- Effect: Allow
+  Action:
+    - iam:GetRole
+    - iam:PassRole
+  Resource:
+    - !GetAtt dataAccessRole.Arn

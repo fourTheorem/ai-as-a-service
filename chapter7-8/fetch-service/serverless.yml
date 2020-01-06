@@ -1,0 +1,63 @@
+service: fetch-service
+
+plugins:
+  - serverless-offline
+  - serverless-prune-plugin
+  - serverless-plugin-chrome
+  - serverless-pseudo-parameters
+  - serverless-dotenv-plugin
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  stage: ${opt:stage, 'dev'}
+  region: ${opt:region, 'eu-west-1'}
+  environment:
+    STAGE: ${self:provider.stage}
+    ITEM_STORE_BUCKET: ${env:ITEM_STORE_BUCKET}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - events:PutEvents
+      Resource: '*'
+    - Effect: Allow
+      Action:
+        - ssm:GetParameter
+        - ssm:GetParameters
+      Resource:
+        - arn:aws:ssm:#{AWS::Region}:#{AWS::AccountId}:parameter/${self:provider.stage}/frontier/*
+    - Effect: Allow
+      Action:
+        - s3:PutObject
+      Resource:
+        - arn:aws:s3:::${env:ITEM_STORE_BUCKET}/*
+    - Effect: Allow
+      Action:
+        - execute-api:Invoke
+        - execute-api:PATCH
+      Resource:
+        - arn:aws:execute-api:#{AWS::Region}:#{AWS::AccountId}:*/${self:provider.stage}/*/frontier-url/*
+
+custom:
+  dotenv:
+    path: ../.env
+  chrome:
+    flags:
+      - --window-size=1280,1696
+      - --hide-scrollbars
+      - --disable-web-security
+
+functions:
+  fetch:
+    timeout: 600
+    memorySize: 2048
+    handler: handler.fetch
+
+resources:
+  Resources:
+    frontierUrlParameter:
+      Type: AWS::SSM::Parameter
+      Properties:
+        Name: /${self:provider.stage}/fetch/lambda-arn
+        Type: String
+        Value: !GetAtt FetchLambdaFunction.Arn
