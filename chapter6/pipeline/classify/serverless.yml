@@ -10,7 +10,7 @@ custom:
 
 provider:
   name: aws
-  runtime: nodejs8.10
+  runtime: nodejs12.x
   stage: ${opt:stage, 'dev'}
   region: ${env:AWS_DEFAULT_REGION, 'eu-west-1'}
   iamRoleStatements:
@@ -28,7 +28,7 @@ provider:
       Action:
         - sts:AssumeRole
       Resource:
-        - ${env.CHAPTER6_DATA_ACCESS_ARN}
+        - ${env:CHAPTER6_DATA_ACCESS_ARN}
     - Effect: Allow
       Action:
         - iam:PassRole
