@@ -67,7 +67,6 @@ function queueAnalysis (url, context) {
 module.exports.crawlImages = function (event, context, cb) {
   if (event.action === 'download' && event.msg && event.msg.url) {
     crawl(event.msg.url, context).then(result => {
-      cb(null, result)
       queueAnalysis(event.msg.url, context).then(result => {
         cb(null, result)
       })
