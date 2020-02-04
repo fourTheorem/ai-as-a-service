@@ -9,8 +9,8 @@ const fs = require('fs')
 const path = require('path')
 const moment = require('moment')
 const dotenv = require('dotenv')
-const AWS = require('aws-sdk')
 const env = dotenv.parse(fs.readFileSync(path.resolve(path.join(__dirname, '..', '.env'))))
+const AWS = require('aws-sdk')
 
 const kinesis = new AWS.Kinesis()
 

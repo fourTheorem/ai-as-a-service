@@ -35,10 +35,10 @@ function writeAnalysis (domain, labels, wcList) {
     s3.getObject(params, (err, data) => {
       if (err) { return resolve({stat: err}) }
       let statFile = JSON.parse(data.Body.toString())
-      statFile.analysisResults = labels 
+      statFile.analysisResults = labels
       statFile.wordCloudList = wcList
       statFile.stat = 'analyzed'
-      s3.putObject({Bucket: process.env.BUCKET, Key: domain + '/status.json', Body: Buffer.from(JSON.stringify(statFile), 'utf8')}, (err, data) => {
+      s3.putObject({Bucket: process.env.BUCKET, Key: domain + '/status.json', Body: Buffer.from(JSON.stringify(statFile, null, 2), 'utf8')}, (err, data) => {
         resolve({stat: err || 'ok'})
       })
     })

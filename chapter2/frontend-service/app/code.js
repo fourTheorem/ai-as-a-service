@@ -1,10 +1,10 @@
 /* globals $:false imageListItemTpl:false imageListTpl:false WordCloud:false */
 'use strict'
 
-// const BUCKET_ROOT = 'https://s3-eu-west-1.amazonaws.com/chap2bucketfourtheorem'
-// const API_ROOT = 'https://chapter2api.fourtheoremdemo.com/api/'
 const BUCKET_ROOT = '<YOUR BUCKET URL>'
-const API_ROOT = 'https://<YOUR CUSTOM DOMAIN>/api/'
+const API_ROOT = 'https://chapter2api.<YOUR CUSTOM DOMAIN>/api/'
+// const BUCKET_ROOT = 'https://s3-eu-west-1.amazonaws.com/peterbooktestingfeb2020'
+// const API_ROOT = 'https://chapter2api.aiasaservice.info/api/'
 
 
 function renderUrlList () {

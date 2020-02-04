@@ -140,7 +140,6 @@ function processResults (res, cb) {
       if (err) { return cb(err) }
 
       extract(data.Body, (results) => {
-        console.log(results)
         cb(null, mailer.buildOutput(metaJson, results))
       })
     })
@@ -149,13 +148,13 @@ function processResults (res, cb) {
 
 
 function pollInProgressJob (cb) {
-  let result = { status: 'none' }
+  let result = { status: 'no jobs in progress' }
   const params = {
     Bucket: process.env.CHAPTER6_PIPELINE_PROCESSING_BUCKET,
     Key: PROC_DIR + '/jobid.json'
   }
   s3.getObject(params, (err, data) => {
-    if (err) { console.log('no in progress jobs'); return cb(null, result) } // error if job file doesn't exist, in this case end poll
+    if (err) { return cb(null, result) }
 
     result.status = 'running'
     const jobid = JSON.parse(data.Body.toString())
@@ -164,11 +163,14 @@ function pollInProgressJob (cb) {
       JobId: jobid.jobId
     }
     comp.describeDocumentClassificationJob(params, (err, data) => {
-      if (err) { return cb(err) }
-      console.log(data.DocumentClassificationJobProperties)
+      if (err) { return cb(err, {status: err}) }
       if (data.DocumentClassificationJobProperties.JobStatus === 'COMPLETED') {
         result.status = 'completed'
         result.outputUrl = data.DocumentClassificationJobProperties.OutputDataConfig.S3Uri
+      }
+      if (data.DocumentClassificationJobProperties.JobStatus === 'FAILED' ||
+        data.DocumentClassificationJobProperties.JobStatus === 'STOPPED') {
+        result.status = 'failed'
       }
       cb(null, result)
     })
@@ -188,8 +190,7 @@ module.exports.cleanup = function (event, context, cb) {
     asnc.eachSeries(data.Contents, (file, asnCb) => {
       deleteKey(file.Key, asnCb)
     }, (err) => {
-      console.log('done.')
-      cb(err)
+      cb(err, 'done')
     })
   })
 }
@@ -197,15 +198,14 @@ module.exports.cleanup = function (event, context, cb) {
 
 module.exports.poll = function (event, context, cb) {
   pollInProgressJob((err, result) => {
-    if (err) { return cb(err) }
-    console.log(result.status)
+    if (err) { return cb(err, result) }
 
-    if (result.status === 'none') { return cb() }
     if (result.status === 'completed') {
       processResults(result, (err, output) => {
-        if (err) { return cb(err) }
-        console.log(JSON.stringify(output, null, 2))
+        cb(err, output)
       })
+    } else {
+      cb(err, result)
     }
   })
 }

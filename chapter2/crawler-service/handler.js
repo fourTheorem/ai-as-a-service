@@ -15,7 +15,7 @@ function writeStatus (url, domain, results) {
   }
 
   return new Promise((resolve) => {
-    s3.putObject({Bucket: process.env.BUCKET, Key: domain + '/status.json', Body: Buffer.from(JSON.stringify(statFile), 'utf8')}, (err, data) => {
+    s3.putObject({Bucket: process.env.BUCKET, Key: domain + '/status.json', Body: Buffer.from(JSON.stringify(statFile, null, 2), 'utf8')}, (err, data) => {
       resolve({stat: err || 'ok'})
     })
   })
@@ -25,6 +25,7 @@ function writeStatus (url, domain, results) {
 function crawl (url, context) {
   const domain = urlParser.parse(url).hostname
 
+  console.log('crawling: ' + url)
   return new Promise(resolve => {
     request(url, (err, response, body) => {
       if (err || response.statusCode !== 200) { return resolve({statusCode: 500, body: err}) }
@@ -56,6 +57,7 @@ function queueAnalysis (url, context) {
   return new Promise(resolve => {
     sqs.sendMessage(params, (err, data) => {
       if (err) { return resolve({statusCode: 500, body: err}) }
+      console.log('queued analysis: ' + queueUrl)
       resolve({statusCode: 200, body: {queue: queueUrl, msgId: data.MessageId}})
     })
   })
@@ -65,7 +67,6 @@ function queueAnalysis (url, context) {
 module.exports.crawlImages = function (event, context, cb) {
   if (event.action === 'download' && event.msg && event.msg.url) {
     crawl(event.msg.url, context).then(result => {
-      cb(null, result)
       queueAnalysis(event.msg.url, context).then(result => {
         cb(null, result)
       })

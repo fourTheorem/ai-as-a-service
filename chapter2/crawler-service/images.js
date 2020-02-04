@@ -51,6 +51,7 @@ module.exports = function () {
 
           const fileName = uuid()
           s3.putObject({Bucket: process.env.BUCKET, Key: domain + '/' + fileName, Body: buffer}, (err, data) => {
+            console.log('writing: ' + imageUrl)
             resolve({url: imageUrl, stat: err || 'ok'})
           })
         })
