@@ -23,7 +23,7 @@ const IN_DIR = 'in'
 
 function writeNegativeSentiment (message, cb) {
   const fn = uuidv1()
-  s3.putObject({Bucket: process.env.CHAPTER6_PIPELINE_PROCESSING_BUCKET, Key: IN_DIR + '/' + fn + '.json', Body: Buffer.from(JSON.stringify(message), 'utf8')}, (err, data) => {
+  s3.putObject({Bucket: process.env.CHAPTER7_PIPELINE_PROCESSING_BUCKET, Key: IN_DIR + '/' + fn + '.json', Body: Buffer.from(JSON.stringify(message), 'utf8')}, (err, data) => {
     cb(err, data)
   })
 }

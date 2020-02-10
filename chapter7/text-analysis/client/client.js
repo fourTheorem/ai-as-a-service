@@ -9,7 +9,7 @@ module.exports = function (env) {
   function getSignedUrl (cb) {
     req({
       method: 'GET',
-      url: env.CHAPTER6_GETUPLOAD_URL
+      url: env.CHAPTER7_GETUPLOAD_URL
     }, (err, res, body) => {
       if (err || res.statusCode !== 200) { return cb({statusCode: res.statusCode, err: err, body: body.toString()}) }
       cb(null, JSON.parse(body.toString()))
@@ -38,7 +38,7 @@ module.exports = function (env) {
   function analyze (key, cb) {
     req({
       method: 'POST',
-      url: env.CHAPTER6_ANALYZE_URL,
+      url: env.CHAPTER7_ANALYZE_URL,
       body: JSON.stringify({imageKey: key})
     }, (err, res, body) => {
       if (err || res.statusCode !== 200) { return cb({statusCode: res.statusCode, err: err, body: body.toString()}) }

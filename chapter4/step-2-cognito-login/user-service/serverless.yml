@@ -1,4 +1,4 @@
-service: chapter3users
+service: chapter4users
 frameworkVersion: ">=1.30.0"
 custom:
   region: ${env:AWS_DEFAULT_REGION, 'eu-west-1'}

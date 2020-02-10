@@ -14,14 +14,14 @@ function remove () {
   done
 }
 
-aws s3 rm s3://${CHAPTER6_PIPELINE_PROCESSING_BUCKET} --recursive
-aws s3 rm s3://${CHAPTER6_PIPELINE_TRAINING_BUCKET} --recursive
-aws comprehend delete-document-classifier --document-classifier-arn ${CHAPTER6_CLASSIFIER_ARN}
+aws s3 rm s3://${CHAPTER7_PIPELINE_PROCESSING_BUCKET} --recursive
+aws s3 rm s3://${CHAPTER7_PIPELINE_TRAINING_BUCKET} --recursive
+aws comprehend delete-document-classifier --document-classifier-arn ${CHAPTER7_CLASSIFIER_ARN}
 
-export CHAPTER6_DATA_ACCESS_ARN
-CHAPTER6_DATA_ACCESS_ROLE_NAME=`node -e "console.log(process.env.CHAPTER6_DATA_ACCESS_ARN.split('/')[1])"`
-aws iam delete-role-policy --role-name ${CHAPTER6_DATA_ACCESS_ROLE_NAME} --policy-name ComprehendS3
-aws iam delete-role --role-name ${CHAPTER6_DATA_ACCESS_ROLE_NAME}
+export CHAPTER7_DATA_ACCESS_ARN
+CHAPTER7_DATA_ACCESS_ROLE_NAME=`node -e "console.log(process.env.CHAPTER7_DATA_ACCESS_ARN.split('/')[1])"`
+aws iam delete-role-policy --role-name ${CHAPTER7_DATA_ACCESS_ROLE_NAME} --policy-name ComprehendS3
+aws iam delete-role --role-name ${CHAPTER7_DATA_ACCESS_ROLE_NAME}
 remove
 
 echo ----------[ removing training bucket ]----------

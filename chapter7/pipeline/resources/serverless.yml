@@ -1,11 +1,11 @@
-service: chapter6-resources
+service: chapter7-resources
 frameworkVersion: ">=1.30.0"
 plugins:
   - serverless-dotenv-plugin
 custom:
   region: ${env:AWS_DEFAULT_REGION, 'eu-west-1'}
   accountid: ${env:AWS_ACCOUNT_ID}
-  trainingbucket: ${env.CHAPTER6_TRAINING_BUCKET}
+  trainingbucket: ${env.CHAPTER7_TRAINING_BUCKET}
   dotenv:
     path: ../.env
 
@@ -20,8 +20,8 @@ resources:
     KinesisStream:
       Type: AWS::Kinesis::Stream
       Properties:
-        Name: ${env:CHAPTER6_STREAM_NAME}
-        ShardCount: ${env:CHAPTER6_SHARD_COUNT}
+        Name: ${env:CHAPTER7_STREAM_NAME}
+        ShardCount: ${env:CHAPTER7_SHARD_COUNT}
     TrainingBucket:
       Type: AWS::S3::Bucket
       Properties:

@@ -15,10 +15,10 @@ And you have created a .env file in this directory containg
 
 ```
 TARGET_REGION=eu-west-1
-CHAPTER3_BUCKET=<YOUR BUCKET NAME>
-CHAPTER3_DATA_BUCKET=<YOUR DATA BUCKET NAME>
-CHAPTER3_DOMAIN=<YOUR CUSTOM DOMAIN>
-CHAPTER3_COGNITO_BASE_DOMAIN=<BASE COGNITO DOMAIN>
+CHAPTER4_BUCKET=<YOUR BUCKET NAME>
+CHAPTER4_DATA_BUCKET=<YOUR DATA BUCKET NAME>
+CHAPTER4_DOMAIN=<YOUR CUSTOM DOMAIN>
+CHAPTER4_COGNITO_BASE_DOMAIN=<BASE COGNITO DOMAIN>
 ```
 
 Then the system can be deployed using:
@@ -30,7 +30,7 @@ $ bash ./deploy.sh
 access using:
 
 ```
-https://${CHAPTER3_BUCKET}.s3.amazonaws.com/index.html
+https://${CHAPTER4_BUCKET}.s3.amazonaws.com/index.html
 ```
 
 The system can be reomved using:

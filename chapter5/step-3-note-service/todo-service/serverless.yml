@@ -1,4 +1,4 @@
-service: chapter3-todo
+service: chapter4-todo
 frameworkVersion: ">=1.30.0"
 plugins:
   - serverless-offline
@@ -7,12 +7,12 @@ plugins:
 custom:
   region: ${env:AWS_DEFAULT_REGION, 'eu-west-1'}
   accountid: ${env:AWS_ACCOUNT_ID}
-  poolArn: ${env:CHAPTER3_POOL_ARN}
-  domain: ${env:CHAPTER3_DOMAIN}
+  poolArn: ${env:CHAPTER4_POOL_ARN}
+  domain: ${env:CHAPTER4_DOMAIN}
   dotenv:
     path: ../.env
   customDomain:
-    domainName: 'chapter3api.${self:custom.domain}'
+    domainName: 'chapter4api.${self:custom.domain}'
     stage: ${self:provider.stage}
     basePath: api
     certificateName: '*.${self:custom.domain}'

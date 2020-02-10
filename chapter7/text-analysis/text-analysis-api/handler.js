@@ -39,7 +39,7 @@ function respond (err, body, cb) {
 module.exports.uploadLink = function (event, context, cb) {
   const key = 'in/' + uuid() + '.jpg'
   const params = {
-    Bucket: process.env.CHAPTER6_IMAGE_BUCKET,
+    Bucket: process.env.CHAPTER7_IMAGE_BUCKET,
     Key: key,
     Expires: 300
   }
@@ -54,7 +54,7 @@ module.exports.analyze = function (event, context, cb) {
   const params = {
     Document: {
       S3Object: {
-        Bucket: process.env.CHAPTER6_IMAGE_BUCKET,
+        Bucket: process.env.CHAPTER7_IMAGE_BUCKET,
         Name: data.imageKey
       }
     },

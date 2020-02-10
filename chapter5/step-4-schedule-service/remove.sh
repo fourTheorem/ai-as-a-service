@@ -14,11 +14,11 @@ function remove () {
   done
 }
 
-aws s3 rm s3://${CHAPTER3_BUCKET} --recursive
-aws s3 rm s3://${CHAPTER3_DATA_BUCKET} --recursive
+aws s3 rm s3://${CHAPTER4_BUCKET} --recursive
+aws s3 rm s3://${CHAPTER4_DATA_BUCKET} --recursive
 . ./cognito.sh teardown
 
 remove
 
-aws dynamodb delete-table --table-name chapter3-todo-dev
+aws dynamodb delete-table --table-name chapter4-todo-dev
 

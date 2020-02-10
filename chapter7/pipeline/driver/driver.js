@@ -43,7 +43,7 @@ function postData (department, sentiment, cb) {
 
   req({
     method: 'POST',
-    url: env.CHAPTER6_PIPELINE_API,
+    url: env.CHAPTER7_PIPELINE_API,
     body: JSON.stringify(msg)
   }, (err, res, body) => {
     if (err || res.statusCode !== 200) { return cb({statusCode: res.statusCode, err: err, body: body.toString()}) }

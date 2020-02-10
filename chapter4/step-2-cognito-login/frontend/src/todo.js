@@ -5,7 +5,7 @@ import {view} from './todo-view'
 const todo = {activate}
 export {todo}
 
-const API_ROOT = `https://chapter3api.${process.env.CHAPTER3_DOMAIN}/api/todo/`
+const API_ROOT = `https://chapter4api.${process.env.CHAPTER4_DOMAIN}/api/todo/`
 
 let auth
 

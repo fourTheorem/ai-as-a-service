@@ -1,11 +1,11 @@
-service: c6textanalysis
+service: c7textanalysis
 frameworkVersion: ">=1.30.0"
 plugins:
   - serverless-dotenv-plugin
 custom:
   region: ${env:AWS_DEFAULT_REGION, 'eu-west-1'}
   accountid: ${env:AWS_ACCOUNT_ID}
-  imagebucket: ${env:CHAPTER6_IMAGE_BUCKET}
+  imagebucket: ${env:CHAPTER7_IMAGE_BUCKET}
   dotenv:
     path: ../.env
 

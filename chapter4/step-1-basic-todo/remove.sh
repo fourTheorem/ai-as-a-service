@@ -14,7 +14,7 @@ function remove () {
   done
 }
 
-aws s3 rm s3://${CHAPTER3_BUCKET} --recursive
-aws s3 rm s3://${CHAPTER3_DATA_BUCKET} --recursive
+aws s3 rm s3://${CHAPTER4_BUCKET} --recursive
+aws s3 rm s3://${CHAPTER4_DATA_BUCKET} --recursive
 remove
 

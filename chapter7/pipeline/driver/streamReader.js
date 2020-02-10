@@ -63,11 +63,11 @@ if (process.argv.length < 3) {
   console.log('usage: node streamReader.js [translate| sentiment]')
 } else {
   if (process.argv[2] === 'translate') {
-    readFromStream(env.CHAPTER6_PIPELINE_TRANSLATE_STREAM, err => {
+    readFromStream(env.CHAPTER7_PIPELINE_TRANSLATE_STREAM, err => {
       console.log(err)
     })
   } else {
-    readFromStream(env.CHAPTER6_PIPELINE_SENTIMENT_STREAM, err => {
+    readFromStream(env.CHAPTER7_PIPELINE_SENTIMENT_STREAM, err => {
       console.log(err)
     })
   }

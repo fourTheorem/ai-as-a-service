@@ -5,7 +5,7 @@ plugins:
 custom:
   region: ${env:AWS_DEFAULT_REGION, 'eu-west-1'}
   accountid: ${env:AWS_ACCOUNT_ID}
-  processingbucket: ${env:CHAPTER6_PIPELINE_PROCESSING_BUCKET}
+  processingbucket: ${env:CHAPTER7_PIPELINE_PROCESSING_BUCKET}
   dotenv:
     path: ../.env
 
@@ -38,7 +38,7 @@ functions:
     events:
       - stream:
           type: kinesis
-          arn: ${env:CHAPTER6_PIPELINE_SENTIMENT_STREAM_ARN}
+          arn: ${env:CHAPTER7_PIPELINE_SENTIMENT_STREAM_ARN}
           batchSize: 100
           startingPosition: LATEST
           enabled: true

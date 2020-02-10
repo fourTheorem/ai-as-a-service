@@ -26,7 +26,7 @@
     "build": "webpack && cp ./src/index.html ./dist/index.html && cp -r ./assets ./dist",
     "watch": "webpack --watch",
     "start": "webpack-dev-server --open",
-    "dist": "aws s3 sync dist/ s3://$CHAPTER3_BUCKET"
+    "dist": "aws s3 sync dist/ s3://$CHAPTER4_BUCKET"
   },
   "license": "ISC"
 }

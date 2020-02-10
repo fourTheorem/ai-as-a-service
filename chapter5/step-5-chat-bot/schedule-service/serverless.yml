@@ -1,19 +1,19 @@
-service: chapter3-schedule
+service: chapter4-schedule
 frameworkVersion: ">=1.30.0"
 plugins:
   - serverless-offline
   - serverless-domain-manager
   - serverless-dotenv-plugin
 custom:
-  dataBucket: ${env:CHAPTER3_DATA_BUCKET}
+  dataBucket: ${env:CHAPTER4_DATA_BUCKET}
   region: ${env:AWS_DEFAULT_REGION, 'eu-west-1'}
   accountid: ${env:AWS_ACCOUNT_ID}
-  poolArn: ${env:CHAPTER3_POOL_ARN}
-  domain: ${env:CHAPTER3_DOMAIN}
+  poolArn: ${env:CHAPTER4_POOL_ARN}
+  domain: ${env:CHAPTER4_DOMAIN}
   dotenv:
     path: ../.env
   customDomain:
-    domainName: 'chapter3api.${self:custom.domain}'
+    domainName: 'chapter4api.${self:custom.domain}'
     stage: ${self:provider.stage}
     basePath: schedule
     certificateName: '*.${self:custom.domain}'
@@ -27,7 +27,7 @@ provider:
   stage: dev
   region: ${env:AWS_DEFAULT_REGION, 'eu-west-1'}
   environment:
-    TODO_TABLE: 'chapter3-todo-${self:provider.stage}'
+    TODO_TABLE: 'chapter4-todo-${self:provider.stage}'
   iamRoleStatements:
     - Effect: Allow
       Action:

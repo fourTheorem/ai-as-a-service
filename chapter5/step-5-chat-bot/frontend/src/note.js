@@ -10,8 +10,8 @@ import {view} from './note-view'
 const note = {activate, bindRecord}
 export {note}
 
-const API_ROOT = `https://chapter3api.${process.env.CHAPTER3_DOMAIN}/noteapi/note/`
-const DATA_BUCKET_ROOT = `https://s3-${process.env.TARGET_REGION}.amazonaws.com/${process.env.CHAPTER3_DATA_BUCKET}/public/`
+const API_ROOT = `https://chapter4api.${process.env.CHAPTER4_DOMAIN}/noteapi/note/`
+const DATA_BUCKET_ROOT = `https://s3-${process.env.TARGET_REGION}.amazonaws.com/${process.env.CHAPTER4_DATA_BUCKET}/public/`
 
 let auth
 let ac

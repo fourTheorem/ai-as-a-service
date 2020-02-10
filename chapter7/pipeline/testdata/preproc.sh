@@ -13,5 +13,5 @@ node build-training-set.js ./data/pet.json PET
 mkdir -p ./data/final
 cat ./data/AUTO ./data/OFFICE ./data/BEAUTY ./data/PET > ./data/final/training.csv
 
-# aws s3 sync ./data/final/training.csv s3://${CHAPTER6_PIPELINE_TRAINING_BUCKET}
+# aws s3 sync ./data/final/training.csv s3://${CHAPTER7_PIPELINE_TRAINING_BUCKET}
 

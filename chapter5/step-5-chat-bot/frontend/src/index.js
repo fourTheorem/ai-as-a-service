@@ -12,26 +12,26 @@ import {bot} from './bot'
 
 
 const oauth = {
-  domain: process.env.CHAPTER3_COGNITO_DOMAIN,
+  domain: process.env.CHAPTER4_COGNITO_DOMAIN,
   scope: ['email'],
-  redirectSignIn: `https://s3-${process.env.TARGET_REGION}.amazonaws.com/${process.env.CHAPTER3_BUCKET}/index.html`,
-  redirectSignOut: `https://s3-${process.env.TARGET_REGION}.amazonaws.com/${process.env.CHAPTER3_BUCKET}/index.html`,
+  redirectSignIn: `https://s3-${process.env.TARGET_REGION}.amazonaws.com/${process.env.CHAPTER4_BUCKET}/index.html`,
+  redirectSignOut: `https://s3-${process.env.TARGET_REGION}.amazonaws.com/${process.env.CHAPTER4_BUCKET}/index.html`,
   responseType: 'token'
 }
 
 Amplify.configure({
   Auth: {
     region: process.env.TARGET_REGION,
-    userPoolId: process.env.CHAPTER3_POOL_ID,
-    userPoolWebClientId: process.env.CHAPTER3_POOL_CLIENT_ID,
-    identityPoolId: process.env.CHAPTER3_IDPOOL,
+    userPoolId: process.env.CHAPTER4_POOL_ID,
+    userPoolWebClientId: process.env.CHAPTER4_POOL_CLIENT_ID,
+    identityPoolId: process.env.CHAPTER4_IDPOOL,
     mandatorySignIn: false,
     oauth: oauth
   },
   Storage: {
-    bucket: process.env.CHAPTER3_DATA_BUCKET,
+    bucket: process.env.CHAPTER4_DATA_BUCKET,
     region: process.env.TARGET_REGION,
-    identityPoolId: process.env.CHAPTER3_IDPOOL,
+    identityPoolId: process.env.CHAPTER4_IDPOOL,
     level: 'public'
   },
   Interactions: {

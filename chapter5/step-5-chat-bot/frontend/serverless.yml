@@ -1,9 +1,9 @@
-service: chapter3-frontend
+service: chapter4-frontend
 frameworkVersion: ">=1.30.0"
 plugins:
   - serverless-dotenv-plugin
 custom:
-  bucket: ${env:CHAPTER3_BUCKET}
+  bucket: ${env:CHAPTER4_BUCKET}
   region: ${env:AWS_DEFAULT_REGION, 'eu-west-1'}
   accountid: ${env:AWS_ACCOUNT_ID}
   dotenv:

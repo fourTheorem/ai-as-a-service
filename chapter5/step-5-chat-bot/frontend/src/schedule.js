@@ -6,7 +6,7 @@ import {view} from './schedule-view'
 const schedule = {activate}
 export {schedule}
 
-const API_ROOT = `https://chapter3api.${process.env.CHAPTER3_DOMAIN}/schedule/day/`
+const API_ROOT = `https://chapter4api.${process.env.CHAPTER4_DOMAIN}/schedule/day/`
 let itv
 let auth
 

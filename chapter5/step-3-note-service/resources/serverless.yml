@@ -1,10 +1,10 @@
-service: chapter3-resources
+service: chapter4-resources
 frameworkVersion: ">=1.30.0"
 plugins:
   - serverless-dotenv-plugin
 custom:
-  bucket: ${env:CHAPTER3_BUCKET}
-  dataBucket: ${env:CHAPTER3_DATA_BUCKET}
+  bucket: ${env:CHAPTER4_BUCKET}
+  dataBucket: ${env:CHAPTER4_DATA_BUCKET}
   region: ${env:AWS_DEFAULT_REGION, 'eu-west-1'}
   accountid: ${env:AWS_ACCOUNT_ID}
   dotenv:

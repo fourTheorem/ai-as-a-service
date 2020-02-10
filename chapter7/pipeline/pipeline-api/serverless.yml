@@ -22,8 +22,8 @@ resources:
     KinesisStream:
       Type: AWS::Kinesis::Stream
       Properties:
-        Name: ${env:CHAPTER6_PIPELINE_TRANSLATE_STREAM}
-        ShardCount: ${env:CHAPTER6_PIPELINE_SHARD_COUNT}
+        Name: ${env:CHAPTER7_PIPELINE_TRANSLATE_STREAM}
+        ShardCount: ${env:CHAPTER7_PIPELINE_SHARD_COUNT}
 functions:
   ingest:
     handler: handler.ingest

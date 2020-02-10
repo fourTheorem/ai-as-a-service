@@ -46,7 +46,7 @@ module.exports.ingest = function (event, context, cb) {
   const params = {
     Data: event.body,
     PartitionKey: '1',
-    StreamName: process.env.CHAPTER6_PIPELINE_TRANSLATE_STREAM
+    StreamName: process.env.CHAPTER7_PIPELINE_TRANSLATE_STREAM
   }
 
   kinesis.putRecord(params, (err, data) => {

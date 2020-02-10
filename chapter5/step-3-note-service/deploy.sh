@@ -26,6 +26,6 @@ deploy
 
 cd frontend
 npm run build
-aws s3 sync dist/ s3://$CHAPTER3_BUCKET
+aws s3 sync dist/ s3://$CHAPTER4_BUCKET
 cd ..
 

@@ -73,7 +73,7 @@ module.exports.day = (event, context, cb) => {
       LanguageCode: 'en-GB',
       TextType: 'ssml',
       VoiceId: 'Joanna',
-      OutputS3BucketName: process.env.CHAPTER3_DATA_BUCKET,
+      OutputS3BucketName: process.env.CHAPTER4_DATA_BUCKET,
       OutputS3KeyPrefix: 'schedule'
     }
 
@@ -95,7 +95,7 @@ module.exports.poll = (event, context, cb) => {
   polly.getSpeechSynthesisTask({TaskId: event.pathParameters.id}, (err, data) => {
     if (err) { return respond(err, null, cb) }
 
-    let params = {Bucket: process.env.CHAPTER3_DATA_BUCKET, Key: 'schedule.' + data.SynthesisTask.TaskId + '.mp3'}
+    let params = {Bucket: process.env.CHAPTER4_DATA_BUCKET, Key: 'schedule.' + data.SynthesisTask.TaskId + '.mp3'}
     let signedUrl = s3.getSignedUrl('getObject', params)
     let result = {
       taskId: data.SynthesisTask.TaskId,

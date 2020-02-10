@@ -24,7 +24,7 @@ const PROC_DIR = 'proc'
 
 function deleteKey (key, cb) {
   var params = {
-    Bucket: process.env.CHAPTER6_PIPELINE_PROCESSING_BUCKET,
+    Bucket: process.env.CHAPTER7_PIPELINE_PROCESSING_BUCKET,
     Key: key
   }
   s3.deleteObject(params, (err, data) => {
@@ -40,7 +40,7 @@ function aggregate (cb) {
   let metaData = {}
 
   let params = {
-    Bucket: process.env.CHAPTER6_PIPELINE_PROCESSING_BUCKET,
+    Bucket: process.env.CHAPTER7_PIPELINE_PROCESSING_BUCKET,
     Prefix: IN_DIR,
     MaxKeys: 1000
   }
@@ -49,7 +49,7 @@ function aggregate (cb) {
 
     asnc.eachSeries(data.Contents, (file, asnCb) => {
       params = {
-        Bucket: process.env.CHAPTER6_PIPELINE_PROCESSING_BUCKET,
+        Bucket: process.env.CHAPTER7_PIPELINE_PROCESSING_BUCKET,
         Key: file.Key
       }
       s3.getObject(params, (err, data) => {
@@ -65,9 +65,9 @@ function aggregate (cb) {
       })
     }, (err) => {
       if (err) { return cb(err) }
-      s3.putObject({Bucket: process.env.CHAPTER6_PIPELINE_PROCESSING_BUCKET, Key: PROC_DIR + '/meta.json', Body: Buffer.from(JSON.stringify(metaData), 'utf8')}, (err, data) => {
+      s3.putObject({Bucket: process.env.CHAPTER7_PIPELINE_PROCESSING_BUCKET, Key: PROC_DIR + '/meta.json', Body: Buffer.from(JSON.stringify(metaData), 'utf8')}, (err, data) => {
         if (err) { return cb(err) }
-        s3.putObject({Bucket: process.env.CHAPTER6_PIPELINE_PROCESSING_BUCKET, Key: PROC_DIR + '/proc.dat', Body: Buffer.from(dataFile, 'utf8')}, (err, data) => {
+        s3.putObject({Bucket: process.env.CHAPTER7_PIPELINE_PROCESSING_BUCKET, Key: PROC_DIR + '/proc.dat', Body: Buffer.from(dataFile, 'utf8')}, (err, data) => {
           cb(err)
         })
       })
@@ -78,20 +78,20 @@ function aggregate (cb) {
 
 function startClassifier (cb) {
   const params = {
-    DataAccessRoleArn: process.env.CHAPTER6_DATA_ACCESS_ARN,
-    DocumentClassifierArn: process.env.CHAPTER6_CLASSIFIER_ARN,
+    DataAccessRoleArn: process.env.CHAPTER7_DATA_ACCESS_ARN,
+    DocumentClassifierArn: process.env.CHAPTER7_CLASSIFIER_ARN,
     InputDataConfig: {
-      S3Uri: `s3://${process.env.CHAPTER6_PIPELINE_PROCESSING_BUCKET}/${PROC_DIR}/proc.dat`,
+      S3Uri: `s3://${process.env.CHAPTER7_PIPELINE_PROCESSING_BUCKET}/${PROC_DIR}/proc.dat`,
       InputFormat: 'ONE_DOC_PER_LINE'
     },
     OutputDataConfig: {
-      S3Uri: `s3://${process.env.CHAPTER6_PIPELINE_PROCESSING_BUCKET}/${PROC_DIR}/results`
+      S3Uri: `s3://${process.env.CHAPTER7_PIPELINE_PROCESSING_BUCKET}/${PROC_DIR}/results`
     }
   }
   comp.startDocumentClassificationJob(params, (err, data) => {
     if (err) { return cb(err) }
     const jobJson = { jobId: data.JobId }
-    s3.putObject({Bucket: process.env.CHAPTER6_PIPELINE_PROCESSING_BUCKET, Key: PROC_DIR + '/jobid.json', Body: Buffer.from(JSON.stringify(jobJson), 'utf8')}, (err, data) => {
+    s3.putObject({Bucket: process.env.CHAPTER7_PIPELINE_PROCESSING_BUCKET, Key: PROC_DIR + '/jobid.json', Body: Buffer.from(JSON.stringify(jobJson), 'utf8')}, (err, data) => {
       cb(err)
     })
   })
@@ -125,7 +125,7 @@ function processResults (res, cb) {
   const s3Obj = new AWS.S3({maxRetries: 10, signatureVersion: 'v4'})
 
   const params = {
-    Bucket: process.env.CHAPTER6_PIPELINE_PROCESSING_BUCKET,
+    Bucket: process.env.CHAPTER7_PIPELINE_PROCESSING_BUCKET,
     Key: PROC_DIR + '/meta.json'
   }
   s3Obj.getObject(params, (err, meta) => {
@@ -133,7 +133,7 @@ function processResults (res, cb) {
 
     const metaJson = JSON.parse(meta.Body.toString())
     const params = {
-      Bucket: process.env.CHAPTER6_PIPELINE_PROCESSING_BUCKET,
+      Bucket: process.env.CHAPTER7_PIPELINE_PROCESSING_BUCKET,
       Key: key
     }
     s3Obj.getObject(params, (err, data) => {
@@ -150,7 +150,7 @@ function processResults (res, cb) {
 function pollInProgressJob (cb) {
   let result = { status: 'no jobs in progress' }
   const params = {
-    Bucket: process.env.CHAPTER6_PIPELINE_PROCESSING_BUCKET,
+    Bucket: process.env.CHAPTER7_PIPELINE_PROCESSING_BUCKET,
     Key: PROC_DIR + '/jobid.json'
   }
   s3.getObject(params, (err, data) => {
@@ -180,7 +180,7 @@ function pollInProgressJob (cb) {
 
 module.exports.cleanup = function (event, context, cb) {
   let params = {
-    Bucket: process.env.CHAPTER6_PIPELINE_PROCESSING_BUCKET,
+    Bucket: process.env.CHAPTER7_PIPELINE_PROCESSING_BUCKET,
     Prefix: PROC_DIR,
     MaxKeys: 1000
   }

@@ -9,19 +9,19 @@ import {auth} from './auth'
 
 
 const oauth = {
-  domain: process.env.CHAPTER3_COGNITO_DOMAIN,
+  domain: process.env.CHAPTER4_COGNITO_DOMAIN,
   scope: ['email'],
-  redirectSignIn: `https://s3-${process.env.TARGET_REGION}.amazonaws.com/${process.env.CHAPTER3_BUCKET}/index.html`,
-  redirectSignOut: `https://s3-${process.env.TARGET_REGION}.amazonaws.com/${process.env.CHAPTER3_BUCKET}/index.html`,
+  redirectSignIn: `https://s3-${process.env.TARGET_REGION}.amazonaws.com/${process.env.CHAPTER4_BUCKET}/index.html`,
+  redirectSignOut: `https://s3-${process.env.TARGET_REGION}.amazonaws.com/${process.env.CHAPTER4_BUCKET}/index.html`,
   responseType: 'token'
 }
 
 Amplify.configure({
   Auth: {
     region: process.env.TARGET_REGION,
-    userPoolId: process.env.CHAPTER3_POOL_ID,
-    userPoolWebClientId: process.env.CHAPTER3_POOL_CLIENT_ID,
-    identityPoolId: process.env.CHAPTER3_IDPOOL,
+    userPoolId: process.env.CHAPTER4_POOL_ID,
+    userPoolWebClientId: process.env.CHAPTER4_POOL_CLIENT_ID,
+    identityPoolId: process.env.CHAPTER4_IDPOOL,
     mandatorySignIn: false,
     oauth: oauth
   }

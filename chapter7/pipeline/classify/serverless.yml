@@ -28,7 +28,7 @@ provider:
       Action:
         - sts:AssumeRole
       Resource:
-        - ${env:CHAPTER6_DATA_ACCESS_ARN}
+        - ${env:CHAPTER7_DATA_ACCESS_ARN}
     - Effect: Allow
       Action:
         - iam:PassRole
