@@ -1,4 +1,4 @@
-# Chapter 3 - Step 2
+# Chapter 4 - Step 2
 Secured to do application.
 
 ## Deploy and remove
