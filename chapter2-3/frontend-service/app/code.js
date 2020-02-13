@@ -3,8 +3,6 @@
 
 const BUCKET_ROOT = '<YOUR BUCKET URL>'
 const API_ROOT = 'https://chapter2api.<YOUR CUSTOM DOMAIN>/api/'
-// const BUCKET_ROOT = 'https://s3-eu-west-1.amazonaws.com/peterbooktestingfeb2020'
-// const API_ROOT = 'https://chapter2api.aiasaservice.info/api/'
 
 
 function renderUrlList () {
