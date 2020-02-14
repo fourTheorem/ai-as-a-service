@@ -48,7 +48,9 @@ function buildSchedule (date, speakDate, cb) {
       if (item.dueDate === date) {
         added = true
         speech += '<s>' + item.action + '</s>'
-        speech += '<s>' + item.note + '</s>'
+        if (item.note) {
+          speech += '<s>' + item.note + '</s>'
+        }
       }
     })
     if (!added) {

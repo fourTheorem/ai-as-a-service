@@ -12,7 +12,7 @@ function parseResult (result) {
   let info = {}
 
   result.Blocks.forEach((block, idx) => {
-    if (block.BlockType === 'LINE' && block.Confidence > 90) {
+    if (block.BlockType === 'LINE' && block.Confidence > 80) {
       if (/Nationality/g.test(block.Text)) {
         info.nationality = result.Blocks[idx + 1].Text
       }
@@ -39,7 +39,6 @@ function parseResult (result) {
           info.passportNumber = block.Text
         }
       }
-      console.log(block.Text)
     }
   })
   return info

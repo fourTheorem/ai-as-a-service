@@ -14,6 +14,14 @@ function remove () {
   done
 }
 
+function domain () {
+  cd todo-service
+  serverless delete_domain
+  cd ..
+}
+
+domain
+
 aws s3 rm s3://${CHAPTER4_BUCKET} --recursive
 aws s3 rm s3://${CHAPTER4_DATA_BUCKET} --recursive
 remove

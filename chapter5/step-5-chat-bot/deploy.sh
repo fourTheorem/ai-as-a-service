@@ -17,8 +17,15 @@ function deploy () {
   done
 }
 
-deploy
+function domain () {
+  cd todo-service
+  npm install
+  serverless create_domain
+  cd ..
+}
 
+domain
+deploy
 . ./cognito.sh setup
 
 SERVICES=(todo-service note-service schedule-service)
