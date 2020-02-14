@@ -1,0 +1,34 @@
+service: c6p-api
+frameworkVersion: ">=1.30.0"
+plugins:
+  - serverless-dotenv-plugin
+custom:
+  region: ${env:AWS_DEFAULT_REGION, 'eu-west-1'}
+  accountid: ${env:AWS_ACCOUNT_ID}
+  dotenv:
+    path: ../.env
+provider:
+  name: aws
+  runtime: nodejs12.x
+  stage: ${opt:stage, 'dev'}
+  region: ${env:AWS_DEFAULT_REGION, 'eu-west-1'}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - kinesis:PutRecord
+      Resource: '*'
+resources:
+  Resources:
+    KinesisStream:
+      Type: AWS::Kinesis::Stream
+      Properties:
+        Name: ${env:CHAPTER7_PIPELINE_TRANSLATE_STREAM}
+        ShardCount: ${env:CHAPTER7_PIPELINE_SHARD_COUNT}
+functions:
+  ingest:
+    handler: handler.ingest
+    events:
+      - http:
+          method: POST
+          path: ingest
+

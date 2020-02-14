@@ -1,0 +1,80 @@
+service: c7textanalysis
+frameworkVersion: ">=1.30.0"
+plugins:
+  - serverless-dotenv-plugin
+custom:
+  region: ${env:AWS_DEFAULT_REGION, 'eu-west-1'}
+  accountid: ${env:AWS_ACCOUNT_ID}
+  imagebucket: ${env:CHAPTER7_IMAGE_BUCKET}
+  dotenv:
+    path: ../.env
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  stage: ${opt:stage, 'dev'}
+  region: ${env:AWS_DEFAULT_REGION, 'eu-west-1'}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - s3:GetObject
+        - s3:PutObject
+        - s3:ListBucket
+      Resource: "arn:aws:s3:::${self:custom.imagebucket}/*"
+    - Effect: Allow
+      Action:
+        - textract:AnalyzeDocument
+      Resource: "*"
+
+resources:
+  Resources:
+    ImageBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:custom.imagebucket}
+        CorsConfiguration:
+          CorsRules:
+            -
+              AllowedOrigins:
+                - '*'
+              AllowedHeaders:
+                - '*'
+              AllowedMethods:
+                - GET
+                - PUT
+                - POST
+                - DELETE
+                - HEAD
+              MaxAge: 3000
+        AccessControl: PublicReadWrite
+        WebsiteConfiguration:
+          IndexDocument: index.html
+          ErrorDocument: index.html
+    ImageBucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket:
+          Ref: ImageBucket
+        PolicyDocument:
+          Statement:
+            - Sid: PublicReadGetObject
+              Effect: Allow
+              Principal: "*"
+              Action:
+                - s3:*
+              Resource: arn:aws:s3:::${self:custom.imagebucket}/*
+
+functions:
+  upload:
+    handler: handler.uploadLink
+    events:
+      - http:
+          method: GET
+          path: upload
+  analyze:
+    handler: handler.analyze
+    events:
+      - http:
+          method: POST
+          path: analyze
+

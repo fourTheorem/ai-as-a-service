@@ -1,0 +1,60 @@
+service: chapter4-note
+frameworkVersion: ">=1.30.0"
+plugins:
+  - serverless-offline
+  - serverless-domain-manager
+  - serverless-dotenv-plugin
+custom:
+  dataBucket: ${env:CHAPTER4_DATA_BUCKET}
+  region: ${env:AWS_DEFAULT_REGION, 'eu-west-1'}
+  accountid: ${env:AWS_ACCOUNT_ID}
+  poolArn: ${env:CHAPTER4_POOL_ARN}
+  domain: ${env:CHAPTER4_DOMAIN}
+  dotenv:
+    path: ../.env
+  customDomain:
+    domainName: 'chapter4api.${self:custom.domain}'
+    stage: ${self:provider.stage}
+    basePath: noteapi
+    certificateName: '*.${self:custom.domain}'
+    createRoute53Record: true
+    endpointType: regional
+  serverless-offline:
+    port: 3001
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  stage: ${opt:stage, 'dev'}
+  region: ${env:AWS_DEFAULT_REGION, 'eu-west-1'}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - s3:PutObject
+        - s3:GetObject
+      Resource: "arn:aws:s3:::${self:custom.dataBucket}/*"
+    - Effect: Allow
+      Action:
+        - transcribe:*
+      Resource: "*"
+
+functions:
+  transcribe:
+    handler: handler.transcribe
+    events:
+      - http:
+          method: POST
+          path: note
+          cors: true
+          authorizer:
+            arn: '${self:custom.poolArn}'
+  poll:
+    handler: handler.poll
+    events:
+      - http:
+          method: GET
+          path: note/{id}
+          cors: true
+          authorizer:
+            arn: '${self:custom.poolArn}'
+
