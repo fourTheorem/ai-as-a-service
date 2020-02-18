@@ -1,4 +1,4 @@
-service: c6p-translate
+service: c7p-translate
 frameworkVersion: ">=1.30.0"
 plugins:
   - serverless-dotenv-plugin
@@ -25,15 +25,15 @@ resources:
     KinesisStream:
       Type: AWS::Kinesis::Stream
       Properties:
-        Name: ${env:CHAPTER6_PIPELINE_SENTIMENT_STREAM}
-        ShardCount: ${env:CHAPTER6_PIPELINE_SHARD_COUNT}
+        Name: ${env:CHAPTER7_PIPELINE_SENTIMENT_STREAM}
+        ShardCount: ${env:CHAPTER7_PIPELINE_SHARD_COUNT}
 functions:
   translate:
     handler: handler.translate
     events:
       - stream:
           type: kinesis
-          arn: ${env:CHAPTER6_PIPELINE_TRANSLATE_STREAM_ARN}
+          arn: ${env:CHAPTER7_PIPELINE_TRANSLATE_STREAM_ARN}
           batchSize: 100
           startingPosition: LATEST
           enabled: true
