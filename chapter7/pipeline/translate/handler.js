@@ -22,7 +22,7 @@ function writeToSentimentStream (msg, cb) {
   const params = {
     Data: JSON.stringify(msg),
     PartitionKey: '1',
-    StreamName: process.env.CHAPTER6_PIPELINE_SENTIMENT_STREAM
+    StreamName: process.env.CHAPTER7_PIPELINE_SENTIMENT_STREAM
   }
   kinesis.putRecord(params, (err, data) => {
     cb(err)

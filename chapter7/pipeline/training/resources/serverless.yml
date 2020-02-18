@@ -1,11 +1,11 @@
-service: chapter6-resources
+service: chapter7-resources
 frameworkVersion: ">=1.30.0"
 plugins:
   - serverless-dotenv-plugin
 custom:
   region: ${env:AWS_DEFAULT_REGION, 'eu-west-1'}
   accountid: ${env:AWS_ACCOUNT_ID}
-  trainingbucket: ${env:CHAPTER6_PIPELINE_TRAINING_BUCKET}
+  trainingbucket: ${env:CHAPTER7_PIPELINE_TRAINING_BUCKET}
   dotenv:
     path: ../../.env
 

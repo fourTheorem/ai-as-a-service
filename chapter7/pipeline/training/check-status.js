@@ -24,7 +24,7 @@ comp.listDocumentClassificationJobs({}, (err, data) => {
 
 
 const params = {
-  DocumentClassifierArn: process.env.CHAPTER6_CLASSIFIER_ARN
+  DocumentClassifierArn: process.env.CHAPTER7_CLASSIFIER_ARN
 }
 comp.describeDocumentClassifier(params, (err, data) => {
   if (err) { return console.log(err) }
