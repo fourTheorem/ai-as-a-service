@@ -10,7 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "async": "^2.6.2",
-    "aws-sdk": "^2.433.0"
+    "aws-sdk": "^2.622.0"
   },
   "devDependencies": {
     "serverless-dotenv-plugin": "^2.0.1"

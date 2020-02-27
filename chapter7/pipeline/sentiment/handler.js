@@ -13,18 +13,20 @@
 
 'use strict'
 
-const uuidv1 = require('uuid/v1')
 const AWS = require('aws-sdk')
 const asnc = require('async')
 const comp = new AWS.Comprehend()
-const s3 = new AWS.S3()
-const IN_DIR = 'in'
+const kinesis = new AWS.Kinesis()
 
 
-function writeNegativeSentiment (message, cb) {
-  const fn = uuidv1()
-  s3.putObject({Bucket: process.env.CHAPTER7_PIPELINE_PROCESSING_BUCKET, Key: IN_DIR + '/' + fn + '.json', Body: Buffer.from(JSON.stringify(message), 'utf8')}, (err, data) => {
-    cb(err, data)
+function writeNegativeSentiment (msg, cb) {
+  const params = {
+    Data: JSON.stringify(msg),
+    PartitionKey: '1',
+    StreamName: process.env.CHAPTER7_PIPELINE_CLASSIFY_STREAM
+  }
+  kinesis.putRecord(params, (err, data) => {
+    cb(err)
   })
 }
 
@@ -50,12 +52,18 @@ module.exports.detect = function (event, context, cb) {
       if (err) { return asnCb(err) }
       outMsg.sentiment = data.Sentiment
 
-      if (data.Sentiment === 'NEGATIVE') {
+      if (data.Sentiment === 'NEGATIVE' || data.Sentiment === 'NEUTRAL' || data.Sentiment === 'MIXED') {
         writeNegativeSentiment(outMsg, (err, data) => {
           asnCb(err)
         })
       } else {
-        asnCb(null)
+        if (data.SentimentScore.Positive < 0.85) {
+          writeNegativeSentiment(outMsg, (err, data) => {
+            asnCb(err)
+          })
+        } else {
+          asnCb(null)
+        }
       }
     })
   }, (err) => {

@@ -17,6 +17,7 @@ function remove () {
 aws s3 rm s3://${CHAPTER7_PIPELINE_PROCESSING_BUCKET} --recursive
 aws s3 rm s3://${CHAPTER7_PIPELINE_TRAINING_BUCKET} --recursive
 aws comprehend delete-document-classifier --document-classifier-arn ${CHAPTER7_CLASSIFIER_ARN}
+# todo delte endpont
 
 export CHAPTER7_DATA_ACCESS_ARN
 CHAPTER7_DATA_ACCESS_ROLE_NAME=`node -e "console.log(process.env.CHAPTER7_DATA_ACCESS_ARN.split('/')[1])"`
