@@ -2,7 +2,7 @@
  * wordcloud2.js
  * http://timdream.org/wordcloud2.js/
  *
- * Copyright 2011 - 2013 Tim Chien
+ * Copyright 2011 - 2019 Tim Guan-tin Chien and contributors.
  * Released under the MIT license
  */
 
@@ -190,6 +190,7 @@ if (!window.clearImmediate) {
 
       gridSize: 8,
       drawOutOfBound: false,
+      shrinkToFit: false,
       origin: null,
 
       drawMask: false,
@@ -981,24 +982,34 @@ if (!window.clearImmediate) {
           return true;
         }
       }
+      if (settings.shrinkToFit) {
+        if (Array.isArray(item)) {
+          item[1] = item[1] * 3 / 4;
+        } else {
+          item.weight = item.weight * 3 / 4;
+        }
+        return putWord(item);
+      }
       // we tried all distances but text won't fit, return false
       return false;
     };
 
     /* Send DOM event to all elements. Will stop sending event and return
        if the previous one is canceled (for cancelable events). */
-    var sendEvent = function sendEvent(type, cancelable, detail) {
+    var sendEvent = function sendEvent(type, cancelable, details) {
       if (cancelable) {
         return !elements.some(function(el) {
-          var evt = document.createEvent('CustomEvent');
-          evt.initCustomEvent(type, true, cancelable, detail || {});
-          return !el.dispatchEvent(evt);
+          var event = new CustomEvent(type, {
+            detail: details || {}
+          });
+          return !el.dispatchEvent(event);
         }, this);
       } else {
         elements.forEach(function(el) {
-          var evt = document.createEvent('CustomEvent');
-          evt.initCustomEvent(type, true, cancelable, detail || {});
-          el.dispatchEvent(evt);
+          var event = new CustomEvent(type, {
+            detail: details || {}
+          });
+          el.dispatchEvent(event);
         }, this);
       }
     };
@@ -1119,14 +1130,8 @@ if (!window.clearImmediate) {
           canvas.addEventListener('mousemove', wordcloudhover);
         }
 
-        var touchend = function (e) {
-          e.preventDefault();
-        };
-
         if (settings.click) {
           canvas.addEventListener('click', wordcloudclick);
-          canvas.addEventListener('touchstart', wordcloudclick);
-          canvas.addEventListener('touchend', touchend);
           canvas.style.webkitTapHighlightColor = 'rgba(0, 0, 0, 0)';
         }
 
@@ -1135,8 +1140,6 @@ if (!window.clearImmediate) {
 
           canvas.removeEventListener('mousemove', wordcloudhover);
           canvas.removeEventListener('click', wordcloudclick);
-          canvas.removeEventListener('touchstart', wordcloudclick);
-          canvas.removeEventListener('touchend', touchend);
           hovered = undefined;
         });
       }

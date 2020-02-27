@@ -17,7 +17,7 @@ module.exports = function () {
             if (/^data:image/i.test(attribs.src)) {
               urls.push({url: attribs.src, id: attribs.id})
             } else if (!/^(f|ht)tps?:\/\//i.test(attribs.src)) {
-              if (attribs.src[0] === '/') {
+              if (attribs.src[0] === '/' || url[url.length - 1] === '/') {
                 urls.push({url: url + attribs.src, id: attribs.id})
               } else {
                 urls.push({url: url + '/' + attribs.src, id: attribs.id})
@@ -42,11 +42,11 @@ module.exports = function () {
       console.log('fetching: ' + imageUrl)
       request.head(imageUrl, (err, response, body) => {
         console.log('fetching: ' + response)
-        if (err || response.statusCode !== 200) { return resolve({url: imageUrl, stat: err}) }
+        if (err || response.statusCode !== 200) { return resolve({url: imageUrl, stat: response.statusCode, err: err}) }
 
         request({url: imageUrl, encoding: null}, (err, response, buffer) => {
           console.log('fetching: ' + response.statusCode)
-          if (err || response.statusCode !== 200) { return resolve({url: imageUrl, stat: err}) }
+          if (err || response.statusCode !== 200) { return resolve({url: imageUrl, stat: response.statusCode, err: err}) }
 
           const fileName = uuid()
           s3.putObject({Bucket: process.env.BUCKET, Key: domain + '/' + fileName, Body: buffer}, (err, data) => {
