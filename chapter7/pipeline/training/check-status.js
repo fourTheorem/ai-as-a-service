@@ -33,4 +33,3 @@ function listEndpoints (cb) {
 listClassifiers(() => {
   listEndpoints(function () {})
 })
-
