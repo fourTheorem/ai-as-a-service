@@ -2,14 +2,19 @@
 
 const request = require('request')
 const urlParser = require('url')
+const URLSearchParams = require('url').URLSearchParams
+const shortid = require('shortid')
 const AWS = require('aws-sdk')
 const s3 = new AWS.S3()
 const sqs = new AWS.SQS({region: process.env.REGION})
 const images = require('./images')()
 
 function writeStatus (url, domain, results) {
+  let parsed = urlParser.parse(url)
+  parsed.hostname = domain
+  parsed.host = domain
   const statFile = {
-    url: url,
+    url: urlParser.format(parsed),
     stat: 'downloaded',
     downloadResults: results
   }
@@ -22,9 +27,23 @@ function writeStatus (url, domain, results) {
 }
 
 
-function crawl (url, context) {
-  const domain = urlParser.parse(url).hostname
+function createUniqueDomain (url) {
+  const parsed = urlParser.parse(url)
+  const sp = new URLSearchParams(parsed.search)
+  let domain
 
+
+  if (sp.get('q')) {
+    domain = sp.get('q') + '.' + parsed.hostname
+  } else {
+    domain = shortid.generate() + '.' + parsed.hostname
+  }
+  domain = domain.replace(/ /g, '')
+  return domain.toLowerCase()
+}
+
+
+function crawl (domain, url, context) {
   console.log('crawling: ' + url)
   return new Promise(resolve => {
     request(url, (err, response, body) => {
@@ -41,8 +60,7 @@ function crawl (url, context) {
 }
 
 
-function queueAnalysis (url, context) {
-  const domain = urlParser.parse(url).hostname
+function queueAnalysis (domain, url, context) {
   let accountId = process.env.ACCOUNTID
   if (!accountId) {
     accountId = context.invokedFunctionArn.split(':')[4]
@@ -66,8 +84,9 @@ function queueAnalysis (url, context) {
 
 module.exports.crawlImages = function (event, context, cb) {
   if (event.action === 'download' && event.msg && event.msg.url) {
-    crawl(event.msg.url, context).then(result => {
-      queueAnalysis(event.msg.url, context).then(result => {
+    const udomain = createUniqueDomain(event.msg.url)
+    crawl(udomain, event.msg.url, context).then(result => {
+      queueAnalysis(udomain, event.msg.url, context).then(result => {
         cb(null, result)
       })
     })

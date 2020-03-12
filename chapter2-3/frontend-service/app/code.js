@@ -1,8 +1,20 @@
-/* globals $:false imageListItemTpl:false imageListTpl:false WordCloud:false */
+/* globals $:false imageListItemTpl:false imageListTpl:false WordCloud:false Chart:false */
 'use strict'
 
-const BUCKET_ROOT = '<YOUR BUCKET URL>'
-const API_ROOT = 'https://chapter2api.<YOUR CUSTOM DOMAIN>/api/'
+const BUCKET_ROOT = 'https://s3-eu-west-1.amazonaws.com/peterbooktestingfeb2020'
+const API_ROOT = 'https://chapter2api.aiasaservice.info/api/'
+
+
+function displayableUrl (url) {
+  let disp = url
+  if (disp) {
+    const offset = disp.indexOf('?')
+    if (offset !== -1) {
+      disp = disp.substring(0, offset)
+    }
+  }
+  return disp
+}
 
 
 function renderUrlList () {
@@ -12,7 +24,8 @@ function renderUrlList () {
       let output = '<ul class="list-group" id="url-list">'
 
       list.forEach(item => {
-        output += '<li class="list-group-item d-flex justify-content-between align-items-center"><a href="#" class="target-url">' + item.url + '</a><span class="badge badge-primary badge-pill">' + item.stat + '</span></li>'
+        const disp = displayableUrl(item.url)
+        output += '<li class="list-group-item d-flex justify-content-between align-items-center"><a href="#" class="target-url">' + disp + '</a><span class="badge badge-primary badge-pill">' + item.stat + '</span></li>'
       })
       output += '</ul>'
       $('#content').html(output)
@@ -28,6 +41,36 @@ function renderUrlList () {
 }
 
 
+function drawHistogram (data) {
+  let ctx = document.getElementById('histogram').getContext('2d')
+  let labels = []
+  let dataPoints = []
+
+  data.details.wordCloudList.forEach(item => {
+    if (item[1] > 1) {
+      labels.push(item[0])
+      dataPoints.push(item[1])
+    }
+  })
+  let chart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      // labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+      labels: labels,
+      datasets: [{
+        label: 'Label Frequency',
+        backgroundColor: 'rgb(0, 99, 132)',
+        borderColor: 'rgb(0, 99, 132)',
+        data: dataPoints
+      }]
+    },
+    options: {
+      responsive: false
+    }
+  })
+}
+
+
 function renderUrlDetail (url) {
   let list = ''
   let output = ''
@@ -37,9 +80,13 @@ function renderUrlDetail (url) {
     if (data.stat === 'ok') {
       if (data.details && data.details.stat === 'analyzed') {
         data.details.analysisResults.forEach(item => {
-          list += imageListItemTpl(BUCKET_ROOT, item)
+          if (!item.err) {
+            list += imageListItemTpl(BUCKET_ROOT, item)
+          }
         })
-        output = imageListTpl(data.details.url, list)
+
+        const disp = displayableUrl(data.details.url)
+        output = imageListTpl(disp, list)
         $('#content').html(output)
 
         data.details.wordCloudList.forEach(item => {
@@ -49,19 +96,24 @@ function renderUrlDetail (url) {
         })
 
         let options = {
+          /*
           gridSize: Math.round(16 * $('#word-cloud').width() / 512),
           weightFactor: function (size) {
             return Math.pow(size, 2.3) * $('#word-cloud').width() / 512
           },
+          */
+          gridSize: 5,
+          weightFactor: 4.5,
           fontFamily: 'Times, serif',
-          color: 'random-light',
+          color: 'random-dark',
           shuffle: false,
           rotateRatio: 0.5,
           list: wclist,
+          shrinkToFit: true,
           clearCanvas: true
         }
-
         WordCloud(document.getElementById('word-cloud'), options)
+        drawHistogram(data)
       } else {
         $('#content').html('Awaiting analysis!!')
       }

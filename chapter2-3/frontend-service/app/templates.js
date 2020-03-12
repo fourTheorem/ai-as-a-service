@@ -26,8 +26,11 @@ function imageListItemTpl (bucketRoot, item) {
 
 
 function imageListTpl (url, list) {
-  return `<h2>URL: ${url}</h2>
-    <canvas id="word-cloud" width="600" height="400" />
+  return `<h4>URL: ${url}</h4>
+    <canvas id="word-cloud" width="600px" height="400px" style="width: 600px; height: 400px;"></canvas>
+    <div width="600px" height="400px" style="width: 600px; height: 400px; float: right;">
+      <canvas id="histogram"  width="600px" height="400px" style="width: 600px; height: 400px;"></canvas>
+    </div>
     <div class="list-group">
     ${list}
     </div>`

@@ -10,12 +10,8 @@
   "license": "ISC",
   "dependencies": {
     "async": "^2.6.2",
-    "aws-sdk": "^2.421.0",
-    "gunzip-maybe": "^1.4.1",
-    "stream-to-string": "^1.2.0",
-    "streamifier": "^0.1.1",
-    "tar": "^4.4.8",
-    "tar-stream": "^2.0.1"
+    "aws-sdk": "^2.622.0",
+    "uuid": "^3.4.0"
   },
   "devDependencies": {
     "serverless-dotenv-plugin": "^2.0.1"

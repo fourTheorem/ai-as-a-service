@@ -8,18 +8,19 @@
 
 const AWS = require('aws-sdk')
 const asnc = require('async')
-const url = require('url')
-const gunzip = require('gunzip-maybe')
-const tar = require('tar-stream')
-const streamifier = require('streamifier')
-const stos = require('stream-to-string')
-const mailer = require('./mailer')
+const uuidv1 = require('uuid/v1')
 
 const s3 = new AWS.S3()
 const comp = new AWS.Comprehend()
 
-const IN_DIR = 'in'
-const PROC_DIR = 'proc'
+
+const classes = {
+  AUTO: 'auto',
+  OFFICE: 'office',
+  BEAUTY: 'beauty',
+  PET: 'pet',
+  UNCLASSIFIED: 'unclassified'
+}
 
 
 function deleteKey (key, cb) {
@@ -33,155 +34,9 @@ function deleteKey (key, cb) {
   })
 }
 
-
-function aggregate (cb) {
-  let lineNo = 0
-  let dataFile = ''
-  let metaData = {}
-
-  let params = {
-    Bucket: process.env.CHAPTER7_PIPELINE_PROCESSING_BUCKET,
-    Prefix: IN_DIR,
-    MaxKeys: 1000
-  }
-  s3.listObjectsV2(params, (err, data) => {
-    if (err) { return cb(err) }
-
-    asnc.eachSeries(data.Contents, (file, asnCb) => {
-      params = {
-        Bucket: process.env.CHAPTER7_PIPELINE_PROCESSING_BUCKET,
-        Key: file.Key
-      }
-      s3.getObject(params, (err, data) => {
-        if (err) { return asnCb(err) }
-
-        const msg = JSON.parse(data.Body.toString())
-        metaData[lineNo] = msg
-        lineNo++
-        dataFile += msg.text + '\n'
-
-        deleteKey(file.Key)
-        asnCb()
-      })
-    }, (err) => {
-      if (err) { return cb(err) }
-      s3.putObject({Bucket: process.env.CHAPTER7_PIPELINE_PROCESSING_BUCKET, Key: PROC_DIR + '/meta.json', Body: Buffer.from(JSON.stringify(metaData), 'utf8')}, (err, data) => {
-        if (err) { return cb(err) }
-        s3.putObject({Bucket: process.env.CHAPTER7_PIPELINE_PROCESSING_BUCKET, Key: PROC_DIR + '/proc.dat', Body: Buffer.from(dataFile, 'utf8')}, (err, data) => {
-          cb(err)
-        })
-      })
-    })
-  })
-}
-
-
-function startClassifier (cb) {
-  const params = {
-    DataAccessRoleArn: process.env.CHAPTER7_DATA_ACCESS_ARN,
-    DocumentClassifierArn: process.env.CHAPTER7_CLASSIFIER_ARN,
-    InputDataConfig: {
-      S3Uri: `s3://${process.env.CHAPTER7_PIPELINE_PROCESSING_BUCKET}/${PROC_DIR}/proc.dat`,
-      InputFormat: 'ONE_DOC_PER_LINE'
-    },
-    OutputDataConfig: {
-      S3Uri: `s3://${process.env.CHAPTER7_PIPELINE_PROCESSING_BUCKET}/${PROC_DIR}/results`
-    }
-  }
-  comp.startDocumentClassificationJob(params, (err, data) => {
-    if (err) { return cb(err) }
-    const jobJson = { jobId: data.JobId }
-    s3.putObject({Bucket: process.env.CHAPTER7_PIPELINE_PROCESSING_BUCKET, Key: PROC_DIR + '/jobid.json', Body: Buffer.from(JSON.stringify(jobJson), 'utf8')}, (err, data) => {
-      cb(err)
-    })
-  })
-}
-
-
-function extract (body, cb) {
-  const extract = tar.extract()
-  let result = ''
-
-  const tgz = streamifier.createReadStream(body)
-  extract.on('entry', (header, stream, next) => {
-    stos(stream, (err, msg) => {
-      err
-      result += msg
-      next()
-    })
-  })
-
-  extract.on('finish', () => {
-    cb(result)
-  })
-  tgz.pipe(gunzip()).pipe(extract)
-}
-
-
-function processResults (res, cb) {
-  const purl = url.parse(res.outputUrl)
-  const key = purl.pathname.substring(1)
-
-  const s3Obj = new AWS.S3({maxRetries: 10, signatureVersion: 'v4'})
-
-  const params = {
-    Bucket: process.env.CHAPTER7_PIPELINE_PROCESSING_BUCKET,
-    Key: PROC_DIR + '/meta.json'
-  }
-  s3Obj.getObject(params, (err, meta) => {
-    if (err) { return cb(err) }
-
-    const metaJson = JSON.parse(meta.Body.toString())
-    const params = {
-      Bucket: process.env.CHAPTER7_PIPELINE_PROCESSING_BUCKET,
-      Key: key
-    }
-    s3Obj.getObject(params, (err, data) => {
-      if (err) { return cb(err) }
-
-      extract(data.Body, (results) => {
-        cb(null, mailer.buildOutput(metaJson, results))
-      })
-    })
-  })
-}
-
-
-function pollInProgressJob (cb) {
-  let result = { status: 'no jobs in progress' }
-  const params = {
-    Bucket: process.env.CHAPTER7_PIPELINE_PROCESSING_BUCKET,
-    Key: PROC_DIR + '/jobid.json'
-  }
-  s3.getObject(params, (err, data) => {
-    if (err) { return cb(null, result) }
-
-    result.status = 'running'
-    const jobid = JSON.parse(data.Body.toString())
-    result.jobid = jobid.jobId
-    const params = {
-      JobId: jobid.jobId
-    }
-    comp.describeDocumentClassificationJob(params, (err, data) => {
-      if (err) { return cb(err, {status: err}) }
-      if (data.DocumentClassificationJobProperties.JobStatus === 'COMPLETED') {
-        result.status = 'completed'
-        result.outputUrl = data.DocumentClassificationJobProperties.OutputDataConfig.S3Uri
-      }
-      if (data.DocumentClassificationJobProperties.JobStatus === 'FAILED' ||
-        data.DocumentClassificationJobProperties.JobStatus === 'STOPPED') {
-        result.status = 'failed'
-      }
-      cb(null, result)
-    })
-  })
-}
-
-
 module.exports.cleanup = function (event, context, cb) {
   let params = {
     Bucket: process.env.CHAPTER7_PIPELINE_PROCESSING_BUCKET,
-    Prefix: PROC_DIR,
     MaxKeys: 1000
   }
   s3.listObjectsV2(params, (err, data) => {
@@ -196,27 +51,63 @@ module.exports.cleanup = function (event, context, cb) {
 }
 
 
-module.exports.poll = function (event, context, cb) {
-  pollInProgressJob((err, result) => {
-    if (err) { return cb(err, result) }
-
-    if (result.status === 'completed') {
-      processResults(result, (err, output) => {
-        cb(err, output)
-      })
-    } else {
-      cb(err, result)
-    }
+function writeToBucket (clas, message, cb) {
+  const fn = uuidv1()
+  s3.putObject({
+    Bucket: process.env.CHAPTER7_PIPELINE_PROCESSING_BUCKET,
+    Key: clas + '/' + fn + '.json',
+    Body: Buffer.from(JSON.stringify(message), 'utf8')
+  }, (err) => {
+    cb(err)
   })
 }
 
 
+function determineClass (result) {
+  let clas = classes.UNCLASSIFIED
+  let max = 0
+  let ptr
+
+  result.Classes.forEach(cl => {
+    if (cl.Score > max) {
+      max = cl.Score
+      ptr = cl
+    }
+  })
+  if (ptr.Score > 0.96) {
+    clas = classes[ptr.Name]
+  }
+  return clas
+}
+
+
 module.exports.classify = function (event, context, cb) {
-  aggregate(err => {
-    if (err) { return cb(err) }
-    startClassifier(err => {
-      cb(err)
+  asnc.eachSeries(event.Records, (record, asnCb) => {
+    const payload = new Buffer(record.kinesis.data, 'base64').toString('utf8')
+    let message
+
+    try {
+      message = JSON.parse(payload)
+    } catch (exp) {
+      console.log('failed to parse message')
+      return asnCb(null)
+    }
+
+    let params = {
+      EndpointArn: process.env.CHAPTER7_ENDPOINT_ARN,
+      Text: message.text
+    }
+    comp.classifyDocument(params, (err, data) => {
+      if (err) { return asnCb(err) }
+      let clas = determineClass(data)
+      writeToBucket(clas, message, (err) => {
+        if (err) { return asnCb(err) }
+        asnCb()
+      })
     })
+  }, (err) => {
+    if (err) { console.log(err) }
+    cb()
   })
 }
 
