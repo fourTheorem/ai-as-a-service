@@ -1,7 +1,7 @@
 #!/bin/bash
 
 mkdir -p data
-cd data 
+cd data
 
 curl http://snap.stanford.edu/data/amazon/productGraph/categoryFiles/reviews_Automotive_5.json.gz --output reviews_Automotive_5.json.gz
 gunzip reviews_Automotive_5.json.gz

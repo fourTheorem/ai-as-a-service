@@ -4,7 +4,7 @@
 
 const AWS = require('aws-sdk')
 const iam = new AWS.IAM()
-const ROLE_NAME = 'c6-comprehend'
+const ROLE_NAME = 'c7-comprehend'
 
 const trustPolicy = {
   Version: '2012-10-17',

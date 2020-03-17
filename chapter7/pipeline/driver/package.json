@@ -9,7 +9,8 @@
   "author": "Peter Elger <peter.elger@nearform.com>",
   "license": "ISC",
   "dependencies": {
-    "aws-sdk": "^2.433.0",
+    "async": "^3.2.0",
+    "aws-sdk": "^2.622.0",
     "dotenv": "^7.0.0",
     "moment": "^2.24.0",
     "request": "^2.88.0"

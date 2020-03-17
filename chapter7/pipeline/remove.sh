@@ -16,7 +16,6 @@ function remove () {
 
 aws s3 rm s3://${CHAPTER7_PIPELINE_PROCESSING_BUCKET} --recursive
 aws s3 rm s3://${CHAPTER7_PIPELINE_TRAINING_BUCKET} --recursive
-aws comprehend delete-endpoint --endpoint-arn ${CHAPTER7_ENDPOINT_ARN}
 aws comprehend delete-document-classifier --document-classifier-arn ${CHAPTER7_CLASSIFIER_ARN}
 
 export CHAPTER7_DATA_ACCESS_ARN

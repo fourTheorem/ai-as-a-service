@@ -8,35 +8,34 @@ const client = require('./client')(env)
 
 
 function parseResult (result) {
-  // result = require('./data/passport3.json')
   let info = {}
 
   result.Blocks.forEach((block, idx) => {
-    if (block.BlockType === 'LINE' && block.Confidence > 80) {
+    if (block.BlockType === 'LINE' && block.Confidence > 75) {
       if (/Nationality/g.test(block.Text)) {
-        info.nationality = result.Blocks[idx + 1].Text
+        info.nationality = result.Blocks[idx + 1].Text + ' (confidence: ' + block.Confidence + ')'
       }
       if (/Date.+birth/g.test(block.Text)) {
-        info.dob = result.Blocks[idx + 1].Text
+        info.dob = result.Blocks[idx + 1].Text + ' (confidence: ' + block.Confidence + ')'
       }
       if (/Place.+birth/g.test(block.Text)) {
-        info.placeOfBirth = result.Blocks[idx + 2].Text
+        info.placeOfBirth = result.Blocks[idx + 2].Text + ' (confidence: ' + block.Confidence + ')'
       }
       if (/Date.+expiration/g.test(block.Text)) {
-        info.dateOfExpiration = result.Blocks[idx + 1].Text
+        info.dateOfExpiration = result.Blocks[idx + 1].Text + ' (confidence: ' + block.Confidence + ')'
       }
       if (/Date.+issue/g.test(block.Text)) {
-        info.dateOfIssue = result.Blocks[idx + 2].Text
+        info.dateOfIssue = result.Blocks[idx + 2].Text + ' (confidence: ' + block.Confidence + ')'
       }
       if (/Given.+Names/g.test(block.Text)) {
-        info.givenNames = result.Blocks[idx + 2].Text
+        info.givenNames = result.Blocks[idx + 2].Text + ' (confidence: ' + block.Confidence + ')'
       }
       if (/Surname/g.test(block.Text)) {
-        info.surname = result.Blocks[idx + 2].Text
+        info.surname = result.Blocks[idx + 2].Text + ' (confidence: ' + block.Confidence + ')'
       }
       if (/^\d+$/g.test(block.Text)) {
         if (block.Text.length > 5) {
-          info.passportNumber = block.Text
+          info.passportNumber = block.Text + ' (confidence: ' + block.Confidence + ')'
         }
       }
     }
