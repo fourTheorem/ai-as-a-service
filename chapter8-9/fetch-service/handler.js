@@ -3,7 +3,6 @@
 const AWS = require('aws-sdk')
 const signedAxios = require('aws-signed-axios')
 const Promise = require('bluebird')
-const pino = require('pino')
 const browser = require('./browser')
 
 const cwEvents = new AWS.CloudWatchEvents({
@@ -12,11 +11,7 @@ const cwEvents = new AWS.CloudWatchEvents({
 const s3 = new AWS.S3({ endpoint: process.env.S3_ENDPOINT_URL })
 const ssm = new AWS.SSM({ endpoint: process.env.SSM_ENDPOINT_URL })
 
-const log = pino({
-  name: 'fetch-service',
-  level:
-    process.env.IS_OFFLINE || process.env.STAGE === 'dev' ? 'debug' : 'info'
-})
+const log = require('./log')
 
 const itemStoreBucket = process.env.ITEM_STORE_BUCKET
 

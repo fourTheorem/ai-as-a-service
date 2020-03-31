@@ -3,7 +3,6 @@ service: fetch-service
 plugins:
   - serverless-offline
   - serverless-prune-plugin
-  - serverless-plugin-chrome
   - serverless-pseudo-parameters
   - serverless-dotenv-plugin
 
