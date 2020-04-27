@@ -31,12 +31,9 @@ function initBrowser() {
 
 function load(url) {
   return initBrowser().then(page =>
-    page
-      .goto(url)
-      .then(() => new Promise(resolve => setTimeout(resolve, 5000)))
-      .then(() =>
-        Promise.all([
-          page.evaluate(`
+    page.goto(url, { waitUntil: 'domcontentloaded' }).then(() =>
+      Promise.all([
+        page.evaluate(`
 JSON.stringify(Object.values([...document.querySelectorAll("a")]
   .filter(a => a.href.startsWith('http'))
   .map(a => ({ text: a.text.trim(), href: a.href }))
@@ -48,30 +45,29 @@ JSON.stringify(Object.values([...document.querySelectorAll("a")]
     return acc
   }, {})))
 `),
-          page.evaluate('document.documentElement.outerHTML'),
-          page.evaluate(`
+        page.evaluate('document.documentElement.outerHTML'),
+        page.evaluate(`
 function documentText(document) {
+  if (!document || !document.body) {
+    return ''
+  }
   return document.body.innerText + '\\n' +
     [...document.querySelectorAll('iframe')].map(iframe => documentText(iframe.contentDocument)).join('\\n')
 }
 documentText(document)
 `),
-          page.screenshot()
-        ]).then(([linksJson, html, text, screenshotData]) => ({
-          links: JSON.parse(linksJson).reduce(
-            (acc, val) =>
-              acc.find(entry => entry.href === val.href) ? acc : [...acc, val],
-            []
-          ),
-          html,
-          text,
-          screenshotData
-        }))
-      )
-      .finally(() => {
-        log.info('Closing page')
-        page.close()
-      })
+        page.screenshot()
+      ]).then(([linksJson, html, text, screenshotData]) => ({
+        links: JSON.parse(linksJson).reduce(
+          (acc, val) =>
+            acc.find(entry => entry.href === val.href) ? acc : [...acc, val],
+          []
+        ),
+        html,
+        text,
+        screenshotData
+      }))
+    )
   )
 }
 
