@@ -2,7 +2,8 @@ service: resources
 frameworkVersion: ">=1.30.0"
 custom:
   bucket: ${env:CHAPTER2_BUCKET}
-  queue: Chap2Queue
+  crawlerqueue: Chap2CrawlerQueue
+  analysisqueue: Chap2AnalysisQueue
   region: ${env:AWS_DEFAULT_REGION, 'eu-west-1'}
   accountid: ${env:AWS_ACCOUNT_ID}
 
@@ -35,8 +36,12 @@ resources:
               Action:
                 - s3:GetObject
               Resource: arn:aws:s3:::${self:custom.bucket}/*
-    Chap2Queue:
+    Chap2CrawlerQueue:
       Type: "AWS::SQS::Queue"
       Properties:
-        QueueName: "${self:custom.queue}"
+        QueueName: "${self:custom.crawlerqueue}"
+    Chap2AnalysisQueue:
+      Type: "AWS::SQS::Queue"
+      Properties:
+        QueueName: "${self:custom.analysisqueue}"
 

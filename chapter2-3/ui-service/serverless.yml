@@ -4,7 +4,7 @@ plugins:
   - serverless-domain-manager
 custom:
   bucket: ${env:CHAPTER2_BUCKET}
-  queue: Chap2Queue
+  crawlerqueue: Chap2CrawlerQueue
   region: ${env:AWS_DEFAULT_REGION, 'eu-west-1'}
   domain: ${env:CHAPTER2_DOMAIN}
   accountid: ${env:AWS_ACCOUNT_ID}
@@ -31,7 +31,7 @@ provider:
         - sqs:SendMessage
         - sqs:DeleteMessage
         - sqs:GetQueueUrl
-      Resource: "arn:aws:sqs:*:*:${self:custom.queue}"
+      Resource: "arn:aws:sqs:*:*:${self:custom.crawlerqueue}"
     - Effect: Allow
       Action:
         - sqs:ListQueues
@@ -42,7 +42,7 @@ functions:
     handler: handler.analyzeUrl
     environment:
       BUCKET: ${self:custom.bucket}
-      QUEUE: ${self:custom.queue}
+      QUEUE: ${self:custom.crawlerqueue}
       REGION: ${self:custom.region}
       ACCOUNTID: ${self:custom.accountid}
     events:
