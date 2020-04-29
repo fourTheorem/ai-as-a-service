@@ -26,6 +26,11 @@ function writeNegativeSentiment (msg, cb) {
     StreamName: process.env.CHAPTER7_PIPELINE_CLASSIFY_STREAM
   }
   kinesis.putRecord(params, (err, data) => {
+    console.log('-------------------------------')
+    console.log(process.env.CHAPTER7_PIPELINE_CLASSIFY_STREAM)
+    console.log(err)
+    console.log(data)
+    if (err) { console.log(err) }
     cb(err)
   })
 }
@@ -51,17 +56,21 @@ module.exports.detect = function (event, context, cb) {
     comp.detectSentiment(params, (err, data) => {
       if (err) { return asnCb(err) }
       outMsg.sentiment = data.Sentiment
+      outMsg.sentimentScore = data.SentimentScore
 
       if (data.Sentiment === 'NEGATIVE' || data.Sentiment === 'NEUTRAL' || data.Sentiment === 'MIXED') {
+        console.log('writing negative')
         writeNegativeSentiment(outMsg, (err, data) => {
           asnCb(err)
         })
       } else {
         if (data.SentimentScore.Positive < 0.85) {
+          console.log('writing negative')
           writeNegativeSentiment(outMsg, (err, data) => {
             asnCb(err)
           })
         } else {
+          console.log('discarding positive')
           asnCb(null)
         }
       }

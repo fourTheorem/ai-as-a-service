@@ -1,5 +1,6 @@
 'use strict'
 
+const asnc = require('async')
 const AWS = require('aws-sdk')
 const s3 = new AWS.S3()
 const rek = new AWS.Rekognition()
@@ -95,12 +96,25 @@ function iterateBucket (domain) {
 
 
 module.exports.analyzeImages = function (event, context, cb) {
-  if (event.action === 'analyze' && event.msg && event.msg.domain) {
-    iterateBucket(event.msg.domain, context).then(result => {
-      cb(null, result)
-    })
-  } else {
+  asnc.eachSeries(event.Records, (record, asnCb) => {
+    let { body } = record
+
+    try {
+      body = JSON.parse(body)
+    } catch (exp) {
+      return asnCb('message parse error: ' + record)
+    }
+
+    if (body.action === 'analyze' && body.msg && body.msg.domain) {
+      iterateBucket(body.msg.domain, context).then(result => {
+        asnCb(null, result)
+      })
+    } else {
+      asnCb()
+    }
+  }, (err) => {
+    if (err) { console.log(err) }
     cb()
-  }
+  })
 }
 

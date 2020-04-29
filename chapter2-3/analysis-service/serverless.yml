@@ -2,6 +2,7 @@ service: analysis-service
 frameworkVersion: ">=1.30.0"
 custom:
   bucket: ${env:CHAPTER2_BUCKET}
+  analysisqueue: Chap2AnalysisQueue
   region: ${env:AWS_DEFAULT_REGION, 'eu-west-1'}
   accountid: ${env:AWS_ACCOUNT_ID}
 
@@ -21,6 +22,16 @@ provider:
       Action:
         - "rekognition:*"
       Resource: "*"
+    - Effect: Allow
+      Action:
+        - sqs:ListQueues
+      Resource: "arn:aws:sqs:${self:provider.region}::*"
+    - Effect: Allow
+      Action:
+        - sqs:ReceiveMessage
+        - sqs:DeleteMessage
+        - sqs:GetQueueUrl
+      Resource: "arn:aws:sqs:*:*:${self:custom.analysisqueue}"
 
 functions:
   analyzeImages:
@@ -29,4 +40,7 @@ functions:
       BUCKET: ${self:custom.bucket}
       REGION: ${self:custom.region}
       ACCOUNTID: ${self:custom.accountid}
+    events:
+      - sqs:
+          arn: "arn:aws:sqs:${self:provider.region}:${env:AWS_ACCOUNT_ID}:${self:custom.analysisqueue}"
 

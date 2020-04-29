@@ -4,6 +4,7 @@ const request = require('request')
 const urlParser = require('url')
 const URLSearchParams = require('url').URLSearchParams
 const shortid = require('shortid')
+const asnc = require('async')
 const AWS = require('aws-sdk')
 const s3 = new AWS.S3()
 const sqs = new AWS.SQS({region: process.env.REGION})
@@ -65,7 +66,7 @@ function queueAnalysis (domain, url, context) {
   if (!accountId) {
     accountId = context.invokedFunctionArn.split(':')[4]
   }
-  let queueUrl = `https://sqs.${process.env.REGION}.amazonaws.com/${accountId}/${process.env.QUEUE}`
+  let queueUrl = `https://sqs.${process.env.REGION}.amazonaws.com/${accountId}/${process.env.ANALYSIS_QUEUE}`
 
   let params = {
     MessageBody: JSON.stringify({action: 'analyze', msg: {domain: domain}}),
@@ -74,7 +75,7 @@ function queueAnalysis (domain, url, context) {
 
   return new Promise(resolve => {
     sqs.sendMessage(params, (err, data) => {
-      if (err) { return resolve({statusCode: 500, body: err}) }
+      if (err) { console.log('QUEUE ERROR: ' + err); return resolve({statusCode: 500, body: err}) }
       console.log('queued analysis: ' + queueUrl)
       resolve({statusCode: 200, body: {queue: queueUrl, msgId: data.MessageId}})
     })
@@ -83,15 +84,28 @@ function queueAnalysis (domain, url, context) {
 
 
 module.exports.crawlImages = function (event, context, cb) {
-  if (event.action === 'download' && event.msg && event.msg.url) {
-    const udomain = createUniqueDomain(event.msg.url)
-    crawl(udomain, event.msg.url, context).then(result => {
-      queueAnalysis(udomain, event.msg.url, context).then(result => {
-        cb(null, result)
+  asnc.eachSeries(event.Records, (record, asnCb) => {
+    let { body } = record
+
+    try {
+      body = JSON.parse(body)
+    } catch (exp) {
+      return asnCb('message parse error: ' + record)
+    }
+
+    if (body.action === 'download' && body.msg && body.msg.url) {
+      const udomain = createUniqueDomain(body.msg.url)
+      crawl(udomain, body.msg.url, context).then(result => {
+        queueAnalysis(udomain, body.msg.url, context).then(result => {
+          asnCb(null, result)
+        })
       })
-    })
-  } else {
-    cb('malformed message')
-  }
+    } else {
+      asnCb('malformed message')
+    }
+  }, (err) => {
+    if (err) { console.log(err) }
+    cb()
+  })
 }
 

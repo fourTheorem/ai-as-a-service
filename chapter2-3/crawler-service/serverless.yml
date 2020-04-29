@@ -2,7 +2,8 @@ service: crawler-service
 frameworkVersion: ">=1.30.0"
 custom:
   bucket: ${env:CHAPTER2_BUCKET}
-  queue: Chap2Queue
+  crawlerqueue: Chap2CrawlerQueue
+  analysisqueue: Chap2AnalysisQueue
   region: ${env:AWS_DEFAULT_REGION, 'eu-west-1'}
   accountid: ${env:AWS_ACCOUNT_ID}
 
@@ -18,21 +19,30 @@ provider:
       Resource: "arn:aws:s3:::${self:custom.bucket}/*"
     - Effect: Allow
       Action:
+        - sqs:ListQueues
+      Resource: "arn:aws:sqs:${self:provider.region}:*:*"
+    - Effect: Allow
+      Action:
+        - sqs:ReceiveMessage
+        - sqs:DeleteMessage
+        - sqs:GetQueueUrl
+      Resource: "arn:aws:sqs:*:*:${self:custom.crawlerqueue}"
+    - Effect: Allow
+      Action:
         - sqs:SendMessage
         - sqs:DeleteMessage
         - sqs:GetQueueUrl
-      Resource: "arn:aws:sqs:*:*:${self:custom.queue}"
-    - Effect: Allow
-      Action:
-        - sqs:ListQueues
-      Resource: "arn:aws:sqs:::*"
+      Resource: "arn:aws:sqs:*:*:${self:custom.analysisqueue}"
 
 functions:
   crawlImages:
     handler: handler.crawlImages
     environment:
       BUCKET: ${self:custom.bucket}
-      QUEUE: ${self:custom.queue}
+      ANALYSIS_QUEUE: ${self:custom.analysisqueue}
       REGION: ${self:custom.region}
       ACCOUNTID: ${self:custom.accountid}
+    events:
+      - sqs:
+          arn: "arn:aws:sqs:${self:provider.region}:${env:AWS_ACCOUNT_ID}:${self:custom.crawlerqueue}"
 

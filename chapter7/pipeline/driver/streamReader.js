@@ -66,8 +66,16 @@ if (process.argv.length < 3) {
     readFromStream(env.CHAPTER7_PIPELINE_TRANSLATE_STREAM, err => {
       console.log(err)
     })
-  } else {
+  }
+  if (process.argv[2] === 'sentiment') {
+    console.log(env.CHAPTER7_PIPELINE_SENTIMENT_STREAM)
     readFromStream(env.CHAPTER7_PIPELINE_SENTIMENT_STREAM, err => {
+      console.log(err)
+    })
+  }
+  if (process.argv[2] === 'classify') {
+    console.log(env.CHAPTER7_PIPELINE_CLASSIFY_STREAM)
+    readFromStream(env.CHAPTER7_PIPELINE_CLASSIFY_STREAM, err => {
       console.log(err)
     })
   }

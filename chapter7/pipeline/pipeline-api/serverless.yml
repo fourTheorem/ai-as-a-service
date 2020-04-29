@@ -1,4 +1,4 @@
-service: c6p-api
+service: c7p-api
 frameworkVersion: ">=1.30.0"
 plugins:
   - serverless-dotenv-plugin

@@ -8,12 +8,10 @@
   "author": "Eoin Shanaghy <eoin.shanaghy@fourtheorem.com>",
   "devDependencies": {
     "aws-sdk": "^2.339.0",
-    "chrome-launcher": "^0.10.7",
     "iltorb": "^2.4.3",
-    "puppeteer-core": "^1.17.0",
+    "puppeteer": "^2.1.1",
     "serverless-dotenv-plugin": "^2.1.1",
     "serverless-offline": "^3.33.0",
-    "serverless-plugin-chrome": "^1.0.0-55",
     "serverless-prune-plugin": "^1.3.2",
     "serverless-pseudo-parameters": "^2.4.0"
   },
@@ -21,9 +19,10 @@
     "aws-signed-axios": "^1.0.6",
     "axios": "^0.19.0",
     "bluebird": "^3.5.5",
-    "chrome-remote-interface": "^0.27.2",
+    "chrome-aws-lambda": "^2.1.1",
     "lambda-logger-middleware": "^1.0.3",
     "middy": "^0.28.2",
-    "pino": "^5.12.6"
+    "pino": "^5.12.6",
+    "puppeteer-core": "^2.1.1"
   }
 }

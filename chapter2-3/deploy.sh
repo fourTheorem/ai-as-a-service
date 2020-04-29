@@ -1,7 +1,7 @@
 #!/bin/bash
 . checkenv.sh
 
-SERVICES=(resources distributor-service crawler-service analysis-service ui-service)
+SERVICES=(resources crawler-service analysis-service ui-service)
 
 function deploy () {
   for SERVICE in "${SERVICES[@]}"

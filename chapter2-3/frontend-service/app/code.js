@@ -1,6 +1,8 @@
 /* globals $:false imageListItemTpl:false imageListTpl:false WordCloud:false Chart:false */
 'use strict'
 
+// const BUCKET_ROOT = '<YOUR BUCKET URL>' // of the form https://s3-eu-west-1.amazonaws.com/<YOUR BUCKET NAME>
+// const API_ROOT = 'https://chapter2api.<YOUR CUSTOM DOMAIN>/api/'
 const BUCKET_ROOT = 'https://s3-eu-west-1.amazonaws.com/peterbooktestingfeb2020'
 const API_ROOT = 'https://chapter2api.aiasaservice.info/api/'
 

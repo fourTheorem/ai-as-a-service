@@ -1,11 +1,10 @@
-service: c6p-sentiment
+service: c7p-sentiment
 frameworkVersion: ">=1.30.0"
 plugins:
   - serverless-dotenv-plugin
 custom:
   region: ${env:AWS_DEFAULT_REGION, 'eu-west-1'}
   accountid: ${env:AWS_ACCOUNT_ID}
-  processingbucket: ${env:CHAPTER7_PIPELINE_PROCESSING_BUCKET}
   dotenv:
     path: ../.env
 
@@ -17,20 +16,21 @@ provider:
   iamRoleStatements:
     - Effect: Allow
       Action:
-        - s3:PutObject
-      Resource: "arn:aws:s3:::${self:custom.processingbucket}/*"
+        - comprehend:DetectSentiment
+      Resource: "*"
     - Effect: Allow
       Action:
-        - comprehend:DetectSentiment
+        - kinesis:PutRecord
+        - kinesis:PutRecords
       Resource: "*"
 
 resources:
   Resources:
-    ProcessingBucket:
-      Type: AWS::S3::Bucket
+    KinesisStream:
+      Type: AWS::Kinesis::Stream
       Properties:
-        BucketName: ${self:custom.processingbucket}
-        AccessControl: Private
+        Name: ${env:CHAPTER7_PIPELINE_CLASSIFY_STREAM}
+        ShardCount: ${env:CHAPTER7_PIPELINE_SHARD_COUNT}
 
 functions:
   detect:

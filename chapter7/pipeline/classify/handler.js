@@ -23,34 +23,6 @@ const classes = {
 }
 
 
-function deleteKey (key, cb) {
-  var params = {
-    Bucket: process.env.CHAPTER7_PIPELINE_PROCESSING_BUCKET,
-    Key: key
-  }
-  s3.deleteObject(params, (err, data) => {
-    if (err) { console.log(err) }
-    cb && cb()
-  })
-}
-
-module.exports.cleanup = function (event, context, cb) {
-  let params = {
-    Bucket: process.env.CHAPTER7_PIPELINE_PROCESSING_BUCKET,
-    MaxKeys: 1000
-  }
-  s3.listObjectsV2(params, (err, data) => {
-    if (err) { return cb(err) }
-
-    asnc.eachSeries(data.Contents, (file, asnCb) => {
-      deleteKey(file.Key, asnCb)
-    }, (err) => {
-      cb(err, 'done')
-    })
-  })
-}
-
-
 function writeToBucket (clas, message, cb) {
   const fn = uuidv1()
   s3.putObject({
@@ -74,7 +46,7 @@ function determineClass (result) {
       ptr = cl
     }
   })
-  if (ptr.Score > 0.96) {
+  if (ptr.Score > 0.95) {
     clas = classes[ptr.Name]
   }
   return clas

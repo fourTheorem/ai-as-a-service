@@ -1,10 +1,11 @@
-service: c6p-classify
+service: c7p-classify
 frameworkVersion: ">=1.30.0"
 plugins:
   - serverless-dotenv-plugin
 custom:
   region: ${env:AWS_DEFAULT_REGION, 'eu-west-1'}
   accountid: ${env:AWS_ACCOUNT_ID}
+  processingbucket: ${env:CHAPTER7_PIPELINE_PROCESSING_BUCKET}
   dotenv:
     path: ../.env
 
@@ -23,6 +24,7 @@ provider:
         - comprehend:DetectSentiment
         - comprehend:StartDocumentClassificationJob
         - comprehend:DescribeDocumentClassificationJob
+        - comprehend:classifyDocument
       Resource: "*"
     - Effect: Allow
       Action:
@@ -34,10 +36,22 @@ provider:
         - iam:PassRole
       Resource: "*"
 
+resources:
+  Resources:
+    ProcessingBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:custom.processingbucket}
+        AccessControl: Private
+
 functions:
   classify:
     handler: handler.classify
-  poll:
-    handler: handler.poll
-  cleanup:
-    handler: handler.cleanup
+    events:
+      - stream:
+          type: kinesis
+          arn: ${env:CHAPTER7_PIPELINE_CLASSIFY_STREAM_ARN}
+          batchSize: 100
+          startingPosition: LATEST
+          enabled: true
+          async: true
