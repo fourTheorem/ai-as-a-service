@@ -13,6 +13,6 @@
   },
   "devDependencies": {
     "serverless-domain-manager": "^2.6.0",
-    "serverless-offline": "^3.25.10"
+    "serverless-offline": "^12.0.3"
   }
 }
